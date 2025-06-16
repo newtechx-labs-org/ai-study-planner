@@ -4,34 +4,14 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
-import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
-import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
-import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+
 import { useSelector } from "react-redux";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-
-const mainListItems = [
-  {
-    text: "Home",
-    icon: <HomeRoundedIcon />,
-    path: "/home",
-    users: ["admin", "user"],
-  },
-  {
-    text: "Users",
-    icon: <PeopleRoundedIcon />,
-    path: "/users",
-    users: ["admin"],
-  },
-];
-const secondaryListItems = [
-  {
-    text: "Settings",
-    icon: <SettingsRoundedIcon />,
-    path: "/settings",
-  },
-];
+import {
+  mainListItems,
+  secondaryListItems,
+} from "@/app/(main)/utils/NavListItems";
 
 export default function MenuContent({ toggleDrawer }) {
   const { user } = useSelector((state) => state.auth);

@@ -2,6 +2,7 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import PeopleRoundedIcon from "@mui/icons-material/PeopleRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
 
+// Main item list
 export const mainListItems = [
   {
     text: "Home",

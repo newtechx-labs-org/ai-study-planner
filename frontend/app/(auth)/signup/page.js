@@ -69,12 +69,14 @@ export default function SignUp(props) {
   const [nameError, setNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState("");
   const [showLoginAlert, setShowLoginAlert] = useState(false);
+  const [errorAlertMessage, setErrorAlertMessage] = useState("");
+  const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const router = useRouter();
 
   const validateInputs = () => {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
-    const name = document.getElementById("name");
+    const name = document.getElementById("username");
 
     let isValid = true;
 
@@ -117,7 +119,11 @@ export default function SignUp(props) {
       password: data.get("password"),
     });
     if (res.success) {
-      setShowLoginAlert(true);
+      setSuccessAlertMessage(true);
+      setErrorAlertMessage("");
+    } else {
+      setErrorAlertMessage(res.error);
+      setSuccessAlertMessage(false);
     }
   };
 
@@ -128,16 +134,25 @@ export default function SignUp(props) {
 
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
-          {showLoginAlert && (
+          {successAlertMessage && (
             <Alert
               severity="success"
               action={
-                <Button color="inherit" size="small">
-                  Login
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() => router.push("/signin")}
+                >
+                  Signin
                 </Button>
               }
             >
-              User is registered. Please log in now.
+              User is registered. Please Signin now.
+            </Alert>
+          )}
+          {errorAlertMessage && (
+            <Alert severity="warning" onClose={() => setErrorAlertMessage("")}>
+              {errorAlertMessage}
             </Alert>
           )}
           <Typography

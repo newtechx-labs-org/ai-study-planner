@@ -5,8 +5,8 @@ import { NextResponse } from "next/server";
 export function middleware(request) {
   const token = request.cookies.get("refresh_token")?.value;
   const { pathname } = request.nextUrl;
-
-  if (!token) {
+  console.log("pathname::", pathname);
+  if (!token && !["signin", "signup"].includes(pathname)) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 

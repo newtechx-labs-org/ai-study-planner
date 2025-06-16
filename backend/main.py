@@ -26,6 +26,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+blacklisted_tokens = set()
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
 @app.on_event("startup")
@@ -116,9 +118,11 @@ def login(user: UserLogin, session: Session = Depends(get_session)):
     # return LoginResponse(access_token=access_token, refresh_token=refresh_token, user=UserDetails(email=db_user.email, role=db_user.role))
 
 @app.post("/logout")
-def logout():
+def logout(refresh_token: str = Cookie(None)):
+    if refresh_token:
+        blacklisted_tokens.add(refresh_token)  # Add to blacklist
     response = JSONResponse(content={"message": "Logged out"})
-    response.delete_cookie("token")
+    response.delete_cookie("refresh_token")
     return response
 
 @app.post("/refresh", response_model=Token)
@@ -127,6 +131,9 @@ def refresh_token(refresh_token: str = Cookie(None)):
 
     if not refresh_token:
         raise HTTPException(status_code=401, detail="Missing refresh token")
+
+    if refresh_token in blacklisted_tokens:
+        raise HTTPException(status_code=401, detail="Refresh token is blacklisted")
 
     payload = decode_token(refresh_token)
     if not payload or payload.get("type") != "refresh":

@@ -7,7 +7,6 @@ export async function signUp(data) {
     await api.post("/register", data);
     return { success: true };
   } catch (err) {
-    console.error("Signup failed:", err);
     return {
       success: false,
       error: err.response?.data?.detail || "Signup error",
@@ -53,6 +52,7 @@ export async function myProfile(email, password) {
   }
 }
 
-export function signOut() {
-  store.dispatch(logout());
+export async function signOut() {
+  dispatch(logout());
+  await api.post("/logout", {}, { withCredentials: true });
 }

@@ -1,20 +1,25 @@
-# global
+# global ignores
 *.pyc
 *.pyo
 *.pyd
 *.idea
 
-#backend
+# backend ignores
 __pycache__
 venv
 .pytest_cache
 .mypy_cache
 .vscode
 
-# frontend
+# frontend ignores
 .next
 node_modules
 .env.local
 .DS_Store
 *.tsbuildinfo
 next-env.d.ts
+.DS_Store
+
+
+# general
+*.log

@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,7 +14,10 @@ import { styled } from "@mui/material/styles";
 import AppTheme from "../../shared-theme/AppTheme";
 import ColorModeSelect from "../../shared-theme/ColorModeSelect";
 import { useRouter } from "next/navigation";
-import { signIn } from "@/services/userService";
+import { signIn, signOut } from "@/services/userService";
+import { logout } from "@/store/slices/authSlice";
+import { dispatch } from "@/store";
+import { useEffect, useState } from "react";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -60,21 +62,25 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function LogIn(props) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState("");
+  const [emailError, setEmailError] = useState(false);
+  const [emailErrorMessage, setEmailErrorMessage] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
 
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const router = useRouter();
 
+  useEffect(() => {
+    signOut();
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (emailError || passwordError || !validateInputs()) {
-      return;
-    }
+    // if (emailError || passwordError || !validateInputs()) {
+    //   return;
+    // }
     const res = await signIn({ email, password });
 
     if (res.success) {
@@ -125,7 +131,7 @@ export default function LogIn(props) {
           </Typography>
           <Box
             noValidate
-            component="form"
+            // component="form"
             sx={{
               display: "flex",
               flexDirection: "column",
@@ -170,12 +176,7 @@ export default function LogIn(props) {
               />
             </FormControl>
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={handleSubmit}
-            >
+            <Button fullWidth variant="contained" onClick={handleSubmit}>
               Sign in
             </Button>
           </Box>

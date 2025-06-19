@@ -43,7 +43,7 @@ This should load swagger api's
 
 `npm install`
 
-`npm run dev`
+`npm run dev` or for windows `npx next dev`
 
 ### Check if it is working
 

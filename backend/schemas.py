@@ -33,3 +33,10 @@ class LoginResponse(BaseModel):
 
 class TokenRefreshRequest(BaseModel):
     refresh_token: str
+
+class UserNameOut(BaseModel):
+    id: int
+    display_name: str
+
+    class Config:
+        orm_mode = True

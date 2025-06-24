@@ -14,6 +14,21 @@ export async function signUp(data) {
   }
 }
 
+export async function getUserName(id, cache = {}) {
+  try {
+    if (cache[id]) return cache[id];
+
+    const { data } = await api.get(`/users/${id}/name`).then((r) => r.json());
+    cache[id] = data.display_name;
+    return cache[id];
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.detail || "getUserName error",
+    };
+  }
+}
+
 export async function signIn(data) {
   try {
     const res = await api.post(

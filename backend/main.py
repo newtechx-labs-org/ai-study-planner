@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session, select
 from models import User
-from schemas import UserCreate, UserRead, Token, UserLogin, TokenRefreshRequest, LoginResponse, UserDetails
+from schemas import UserCreate, UserRead, Token, UserLogin, TokenRefreshRequest, LoginResponse, UserDetails, UserNameOut
 from utils import hash_password, verify_password
 from auth import create_access_token, create_refresh_token, decode_token
 from database import get_session, init_db
@@ -177,6 +177,22 @@ def refresh_token(refresh_token: str = Cookie(None)):
 
     # return Token(access_token=access_token, refresh_token=refresh_token)
 
+
+@app.get("/users/{user_id}/name", response_model=UserNameOut)
+def get_user_display_name(user_id: int, session: Session = Depends(get_session)):
+    user = session.get(User, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Build “display_name”
+    if user.first_name or user.last_name:
+        disp = f"{user.first_name or ''} {user.last_name or ''}".strip()
+    elif user.username:
+        disp = user.username
+    else:
+        disp = user.email                     # last fallback
+
+    return UserNameOut(id=user.id, display_name=disp)
 
 @app.get("/me", response_model=UserRead)
 def get_me(token: str = Depends(oauth2_scheme), session: Session = Depends(get_session)):

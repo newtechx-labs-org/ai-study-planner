@@ -6,6 +6,7 @@ export function middleware(request) {
   const token = request.cookies.get("refresh_token")?.value;
   const { pathname } = request.nextUrl;
   console.log("pathname::", pathname);
+  console.log("token::", token);
   if (!token && !["signin", "signup"].includes(pathname)) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }

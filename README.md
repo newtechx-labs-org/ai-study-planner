@@ -28,7 +28,7 @@ Example: `DATABASE_URL=postgresql://root:root@localhost/appdb`
 
 ### Finally run the project
 
-`uvicorn main:app --reload`
+`uvicorn main:app --reload` or `python -m uvicorn main:app --reload`
 
 ### Check if it is working
 

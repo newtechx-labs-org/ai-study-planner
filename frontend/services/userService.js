@@ -14,6 +14,40 @@ export async function signUp(data) {
   }
 }
 
+export async function changePassword(data) {
+  try {
+    await api.post("/me/change-password", data);
+    return { success: true };
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.detail || "Signup error",
+    };
+  }
+}
+
+export async function getMe() {
+  try {
+    return await api.get("/me");
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.detail || "getMe error",
+    };
+  }
+}
+
+export async function updateMe(data) {
+  try {
+    return await api.patch("/me", data);
+  } catch (err) {
+    return {
+      success: false,
+      error: err.response?.data?.detail || "updateMe error",
+    };
+  }
+}
+
 export async function getUserName(id, cache = {}) {
   try {
     if (cache[id]) return cache[id];

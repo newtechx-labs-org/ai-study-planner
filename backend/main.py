@@ -1,15 +1,13 @@
-from jose import JWTError
 from fastapi import FastAPI, Depends, HTTPException, status, Cookie
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 from sqlmodel import Session, select
 from models import User
-from schemas import UserCreate, UserRead, Token, UserLogin, TokenRefreshRequest, LoginResponse, UserDetails, UserNameOut
-from utils import hash_password, verify_password
+from schemas import UserCreate, UserRead, Token, UserLogin, LoginResponse, UserNameOut, UserUpdate, PasswordChange
+from utils import hash_password, verify_password, update_model
 from auth import create_access_token, create_refresh_token, decode_token
 from database import get_session, init_db
-from typing import Optional
 import os
 from dotenv import load_dotenv
 
@@ -39,7 +37,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), session: Session = Dep
     payload = decode_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
-    username = payload.get("sub")
+    username = payload.get("username")
     if not username:
         raise HTTPException(status_code=401, detail="Invalid token payload")
     user = session.exec(select(User).where(User.username == username)).first()
@@ -90,18 +88,6 @@ def login(user: UserLogin, session: Session = Depends(get_session)):
         status_code=status.HTTP_200_OK
     )
 
-    # Set cookies
-    # response.set_cookie(
-    #     key="access_token",
-    #     value=access_token,
-    #     httponly=True,
-    #     secure=True,               # Set to False for local dev if not using HTTPS
-    #     samesite="strict",
-    #     max_age=ACCESS_TOKEN_EXPIRE_MINUTES,
-    #     expires=REFRESH_TOKEN_EXPIRE_MINUTES,
-    #     path="/"
-    # )
-
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
@@ -115,8 +101,6 @@ def login(user: UserLogin, session: Session = Depends(get_session)):
 
     return response
 
-    # return LoginResponse(access_token=access_token, refresh_token=refresh_token, user=UserDetails(email=db_user.email, role=db_user.role))
-
 @app.post("/logout")
 def logout(refresh_token: str = Cookie(None)):
     if refresh_token:
@@ -124,6 +108,50 @@ def logout(refresh_token: str = Cookie(None)):
     response = JSONResponse(content={"message": "Logged out"})
     response.delete_cookie("refresh_token")
     return response
+
+@app.patch("/me", response_model=UserRead)
+def update_me(
+    payload: UserUpdate,
+    current: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    current = session.exec(select(User).where(User.username == current.username)).first()
+    if not current:
+        raise HTTPException(status_code=404, detail="User not found")
+    # Validate unique username if it’s being changed
+    if payload.username and payload.username != current.username:
+        exists = session.exec(
+            select(User).where(User.username == payload.username)
+        ).first()
+        if exists:
+            raise HTTPException(400, "Username already taken")
+
+    # Apply partial update
+    update_model(current, payload.model_dump())
+    session.add(current)
+    session.commit()
+    session.refresh(current)
+
+    # OPTIONAL: prompt the client to refresh its JWT if “sub” (username)
+    # is part of the token claims.
+    return current
+
+
+@app.post("/me/change-password", status_code=204)
+def change_password(
+    data: PasswordChange,
+    current: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+):
+    if not verify_password(data.current_password, current.encrypted_password):
+        raise HTTPException(401, "Current password incorrect")
+    
+
+    current.encrypted_password = hash_password(data.new_password)
+    session.add(current)
+    session.commit()
 
 @app.post("/refresh", response_model=Token)
 def refresh_token(refresh_token: str = Cookie(None)):
@@ -164,18 +192,7 @@ def refresh_token(refresh_token: str = Cookie(None)):
         expires=REFRESH_TOKEN_EXPIRE_MINUTES,
         path="/"
     )
-
-    # response.set_cookie(
-    #     key="access_token",
-    #     value=new_access_token,
-    #     httponly=True,
-    #     secure=True,  # set to True in production
-    #     samesite="lax",
-    #     max_age=7 * 24 * 3600,
-    # )
     return response
-
-    # return Token(access_token=access_token, refresh_token=refresh_token)
 
 
 @app.get("/users/{user_id}/name", response_model=UserNameOut)
@@ -199,7 +216,7 @@ def get_me(token: str = Depends(oauth2_scheme), session: Session = Depends(get_s
     payload = decode_token(token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid token")
-    user = session.exec(select(User).where(User.username == payload["sub"])).first()
+    user = session.exec(select(User).where(User.username == payload["username"])).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user

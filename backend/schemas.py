@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, constr
+from typing import Optional
 
 class UserCreate(BaseModel):
     username: str
@@ -15,6 +16,8 @@ class UserRead(BaseModel):
     email: EmailStr
     is_active: bool
     is_admin: bool
+    first_name: str
+    last_name: str
 
 class Token(BaseModel):
     access_token: str
@@ -24,6 +27,16 @@ class Token(BaseModel):
 class UserDetails(BaseModel):
     email: EmailStr
     role: str
+
+class UserUpdate(BaseModel):
+    # “None” ⇢ field may be omitted; otherwise it’s validated
+    first_name: Optional[constr(strip_whitespace=True, max_length=50)]
+    last_name: Optional[constr(strip_whitespace=True, max_length=50)]
+    username:  Optional[constr(strip_whitespace=True, min_length=3, max_length=30)]
+
+class PasswordChange(BaseModel):
+    current_password: constr(min_length=8)
+    new_password: constr(min_length=8)
 
 class LoginResponse(BaseModel):
     access_token: str
@@ -39,4 +52,4 @@ class UserNameOut(BaseModel):
     display_name: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

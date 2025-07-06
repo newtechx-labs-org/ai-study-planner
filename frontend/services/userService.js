@@ -76,9 +76,8 @@ export async function signIn(data) {
 
     const { user, access_token } = res.data;
     dispatch(setCredentials({ user, access_token }));
-    return { success: true };
+    return { user, success: true };
   } catch (err) {
-    console.error("Login failed:", err);
     return {
       success: false,
       error: err.response?.data?.detail || "Login error",

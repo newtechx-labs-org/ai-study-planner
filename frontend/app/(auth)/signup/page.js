@@ -16,7 +16,6 @@ import { Alert } from "@mui/material";
 import { useState } from "react";
 
 import AppTheme from "../../shared-theme/AppTheme";
-import ColorModeSelect from "../../shared-theme/ColorModeSelect";
 import { signUp } from "@/services/userService";
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -68,7 +67,10 @@ export default function SignUp(props) {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [nameError, setNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState("");
-  const [showLoginAlert, setShowLoginAlert] = useState(false);
+  const [firstNameError, setFirstNameError] = useState(false);
+  const [firstNameErrorMessage, setFirstNameErrorMessage] = useState("");
+  const [lastNameError, setLastNameError] = useState(false);
+  const [lastNameErrorMessage, setLastNameErrorMessage] = useState("");
   const [errorAlertMessage, setErrorAlertMessage] = useState("");
   const [successAlertMessage, setSuccessAlertMessage] = useState("");
   const router = useRouter();
@@ -77,6 +79,8 @@ export default function SignUp(props) {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
     const name = document.getElementById("username");
+    const firstName = document.getElementById("first_name");
+    const lastName = document.getElementById("last_name");
 
     let isValid = true;
 
@@ -98,6 +102,24 @@ export default function SignUp(props) {
       setPasswordErrorMessage("");
     }
 
+    if (!firstName.value || firstName.value.length < 1) {
+      setFirstNameError(true);
+      setFirstNameErrorMessage("First name is required.");
+      isValid = false;
+    } else {
+      setFirstNameError(false);
+      setFirstNameErrorMessage("");
+    }
+
+    if (!lastName.value || lastName.value.length < 1) {
+      setLastNameError(true);
+      setLastNameErrorMessage("Last name is required.");
+      isValid = false;
+    } else {
+      setLastNameError(false);
+      setLastNameErrorMessage("");
+    }
+
     if (!name.value || name.value.length < 1) {
       setNameError(true);
       setNameErrorMessage("Name is required.");
@@ -117,6 +139,8 @@ export default function SignUp(props) {
       username: data.get("username"),
       email: data.get("email"),
       password: data.get("password"),
+      first_name: data.get("first_name"),
+      last_name: data.get("last_name"),
     });
     if (res.success) {
       setSuccessAlertMessage(true);
@@ -130,7 +154,6 @@ export default function SignUp(props) {
   return (
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
-      <ColorModeSelect sx={{ position: "fixed", top: "1rem", right: "1rem" }} />
 
       <SignUpContainer direction="column" justifyContent="space-between">
         <Card variant="outlined">
@@ -168,14 +191,42 @@ export default function SignUp(props) {
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
+              <FormLabel htmlFor="name">First name</FormLabel>
+              <TextField
+                autoComplete="first_name"
+                name="first_name"
+                required
+                fullWidth
+                id="first_name"
+                placeholder="First Name"
+                error={firstNameError}
+                helperText={firstNameErrorMessage}
+                color={firstNameError ? "error" : "primary"}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="name">Last name</FormLabel>
+              <TextField
+                autoComplete="last_name"
+                name="last_name"
+                required
+                fullWidth
+                id="last_name"
+                placeholder="Last Name"
+                error={lastNameError}
+                helperText={lastNameErrorMessage}
+                color={lastNameError ? "error" : "primary"}
+              />
+            </FormControl>
+            <FormControl>
+              <FormLabel htmlFor="name">Username</FormLabel>
               <TextField
                 autoComplete="username"
                 name="username"
                 required
                 fullWidth
                 id="username"
-                placeholder="Full Name"
+                placeholder="Username"
                 error={nameError}
                 helperText={nameErrorMessage}
                 color={nameError ? "error" : "primary"}

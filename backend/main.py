@@ -61,6 +61,8 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
     new_user = User(
         username=user.username,
         email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
         encrypted_password=hash_password(user.password)
     )
     session.add(new_user)
@@ -82,6 +84,8 @@ def login(user: UserLogin, session: Session = Depends(get_session)):
         "username": db_user.username,
         "email": db_user.email,
         "role": db_user.role,
+        "first_name": db_user.first_name,
+        "last_name": db_user.last_name
     }
     response = JSONResponse(
         content={"message": "Login successful", "user": user_data, "access_token": access_token },
@@ -240,7 +244,9 @@ def get_profile(access_token: str = Depends(oauth2_scheme), session: Session = D
             detail="Invalid token payload",
         )
 
-    return {"user": {"username": username, "role": role, "email": email}}
+    user = session.exec(select(User).where(User.username == payload["username"])).first()
+
+    return {"user": {"username": username, "role": role, "email": email, "first_name": user.first_name, "last_name": user.last_name}}
 
 @app.get("/all-users")
 def admin_only(current_user: User = Depends(require_role("user"))):

@@ -27,9 +27,9 @@ const profileSchema = yup.object().shape({
 const passwordSchema = yup.object().shape({
   current_password: yup
     .string()
-    .min(8)
+    .min(6)
     .required("Current password is required"),
-  new_password: yup.string().min(8).required(),
+  new_password: yup.string().min(6).required(),
   confirm: yup
     .string()
     .oneOf([yup.ref("new_password")], "Passwords do not match")
@@ -95,22 +95,34 @@ export default function Settings() {
     setPasswordSuccess("");
     setPasswordError("");
     try {
-      await changePassword(data);
-      setPasswordSuccess("Password changed – please log in again.");
-      resetPw();
+      const res = await changePassword(data);
+      if (res.success) {
+        setPasswordSuccess("Password changed – please log in again.");
+        resetPw();
+      } else {
+        setPasswordError(res.error);
+      }
     } catch (e) {
       setPasswordError("Failed to change password.");
     }
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", py: 8, width: "100%" }}>
-      <Container maxWidth="sm">
-        <Typography variant="h4" fontWeight={700} align="center" gutterBottom>
-          Settings
-        </Typography>
+    <Container maxWidth="xl" sx={{ pt: 4, pb: 8 }}>
+      <Typography variant="h4" gutterBottom>
+        Settings
+      </Typography>
+      <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+        Change your name and password here.
+      </Typography>
+      <Divider
+        sx={{
+          mb: 4,
+        }}
+      />
 
-        {/* ---------- PROFILE SECTION ---------- */}
+      {/* ---------- PROFILE SECTION ---------- */}
+      {initial && (
         <Box sx={{ mb: 8 }}>
           <Typography variant="h6" fontWeight={600} gutterBottom>
             Profile
@@ -129,18 +141,11 @@ export default function Settings() {
                 <Alert severity="success">{profileSuccess}</Alert>
               )}
               {profileError && <Alert severity="error">{profileError}</Alert>}
-              <TextField
-                label="Username"
-                fullWidth
-                variant="outlined"
-                {...register("username")}
-                error={!!errors.username}
-                helperText={errors.username?.message}
-              />
+
               <TextField
                 label="First name"
                 fullWidth
-                variant="outlined"
+                variant="standard"
                 {...register("first_name")}
                 error={!!errors.first_name}
                 helperText={errors.first_name?.message}
@@ -148,7 +153,7 @@ export default function Settings() {
               <TextField
                 label="Last name"
                 fullWidth
-                variant="outlined"
+                variant="standard"
                 {...register("last_name")}
                 error={!!errors.last_name}
                 helperText={errors.last_name?.message}
@@ -166,69 +171,69 @@ export default function Settings() {
             </Stack>
           </Box>
         </Box>
+      )}
 
-        <Divider sx={{ my: 4 }} />
+      <Divider sx={{ my: 4 }} />
 
-        {/* ---------- PASSWORD SECTION ---------- */}
-        <Box>
-          <Typography variant="h6" fontWeight={600} gutterBottom>
-            Change Password
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            For your security, use a strong password you haven't used elsewhere.
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={submitPw(onPasswordSubmit)}
-            noValidate
-            sx={{ mt: 1 }}
-          >
-            <Stack spacing={3}>
-              {passwordSuccess && (
-                <Alert severity="success">{passwordSuccess}</Alert>
-              )}
-              {passwordError && <Alert severity="error">{passwordError}</Alert>}
-              <TextField
-                label="Current password"
-                type="password"
-                fullWidth
-                variant="outlined"
-                {...regPw("current_password")}
-                error={!!errPw.current_password}
-                helperText={errPw.current_password?.message}
-              />
-              <TextField
-                label="New password"
-                type="password"
-                fullWidth
-                variant="outlined"
-                {...regPw("new_password")}
-                error={!!errPw.new_password}
-                helperText={errPw.new_password?.message}
-              />
-              <TextField
-                label="Confirm new password"
-                type="password"
-                fullWidth
-                variant="outlined"
-                {...regPw("confirm")}
-                error={!!errPw.confirm}
-                helperText={errPw.confirm?.message}
-              />
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                disabled={subPw}
-                sx={{ alignSelf: "flex-end", minWidth: 160 }}
-              >
-                Change Password
-              </Button>
-            </Stack>
-          </Box>
+      {/* ---------- PASSWORD SECTION ---------- */}
+      <Box>
+        <Typography variant="h6" fontWeight={600} gutterBottom>
+          Change Password
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          For your security, use a strong password you haven't used elsewhere.
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={submitPw(onPasswordSubmit)}
+          noValidate
+          sx={{ mt: 1 }}
+        >
+          <Stack spacing={3}>
+            {passwordSuccess && (
+              <Alert severity="success">{passwordSuccess}</Alert>
+            )}
+            {passwordError && <Alert severity="error">{passwordError}</Alert>}
+            <TextField
+              label="Current password"
+              type="password"
+              fullWidth
+              variant="standard"
+              {...regPw("current_password")}
+              error={!!errPw.current_password}
+              helperText={errPw.current_password?.message}
+            />
+            <TextField
+              label="New password"
+              type="password"
+              fullWidth
+              variant="standard"
+              {...regPw("new_password")}
+              error={!!errPw.new_password}
+              helperText={errPw.new_password?.message}
+            />
+            <TextField
+              label="Confirm new password"
+              type="password"
+              fullWidth
+              variant="standard"
+              {...regPw("confirm")}
+              error={!!errPw.confirm}
+              helperText={errPw.confirm?.message}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              size="large"
+              disabled={subPw}
+              sx={{ alignSelf: "flex-end", minWidth: 160 }}
+            >
+              Change Password
+            </Button>
+          </Stack>
         </Box>
-      </Container>
-    </Box>
+      </Box>
+    </Container>
   );
 }

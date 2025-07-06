@@ -54,7 +54,7 @@ function SideMenuMobile({ open, toggleDrawer, user }) {
                 textTransform: "capitalize",
               }}
             >
-              {user.username}
+              {user.first_name + " " + user.last_name}
             </Typography>
           </Stack>
         </Stack>

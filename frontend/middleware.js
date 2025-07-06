@@ -7,7 +7,7 @@ export function middleware(request) {
   const { pathname } = request.nextUrl;
   console.log("pathname::", pathname);
   console.log("token::", token);
-  if (!token && !["signin", "signup"].includes(pathname)) {
+  if (!token && !["signin", "signup", "/"].includes(pathname)) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
 
@@ -16,5 +16,7 @@ export function middleware(request) {
 
 export const config = {
   // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-  matcher: ["/((?!api|_next/static|signin|signup|_next/image|.*\\.png$).*)"],
+  matcher: [
+    "/((?!api|_next/static|signin|signup|images|_next/images|_next/image|.*\\.png$).*)",
+  ],
 };

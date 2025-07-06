@@ -7,6 +7,8 @@ import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import MenuContent from "./MenuContent";
+import { useRouter } from "next/navigation";
+import { mainListItems } from "@/app/(main)/utils/NavListItems";
 
 const drawerWidth = 240;
 
@@ -22,7 +24,18 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export default function SideMenu({ user }) {
-  console.log(user.email);
+  const router = useRouter();
+
+  const navItem = mainListItems.find((item) => item.users.includes(user.role));
+
+  const handleRefresh = () => {
+    if (navItem) {
+      router.push(navItem.path);
+    } else {
+      router.push("/");
+    }
+  };
+
   return (
     <Drawer
       variant="permanent"
@@ -34,13 +47,16 @@ export default function SideMenu({ user }) {
       }}
     >
       <Box
+        onClick={handleRefresh}
         sx={{
           display: "flex",
           mt: "calc(var(--template-frame-height, 0px) + 4px)",
           p: 1.5,
         }}
       >
-        {process.env.NEXT_PUBLIC_APP_NAME}
+        <Typography variant="h5" component="h1" sx={{ color: "text.primary" }}>
+          {process.env.NEXT_PUBLIC_APP_NAME}
+        </Typography>
       </Box>
       <Divider />
       <Box
@@ -71,16 +87,16 @@ export default function SideMenu({ user }) {
         />
         <Box sx={{ mr: "auto" }}>
           <Typography
-            variant="body2"
+            variant="h6"
             sx={{
               fontWeight: 500,
               lineHeight: "16px",
               textTransform: "capitalize",
             }}
           >
-            {user.username}
+            {user.first_name + " " + user.last_name}
           </Typography>
-          <Typography variant="caption" sx={{ color: "text.secondary" }}>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {user.email}
           </Typography>
         </Box>

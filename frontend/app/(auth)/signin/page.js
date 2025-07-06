@@ -12,12 +12,11 @@ import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
 import AppTheme from "../../shared-theme/AppTheme";
-import ColorModeSelect from "../../shared-theme/ColorModeSelect";
 import { useRouter } from "next/navigation";
 import { signIn, signOut } from "@/services/userService";
-import { logout } from "@/store/slices/authSlice";
-import { dispatch } from "@/store";
 import { useEffect, useState } from "react";
+import { mainListItems } from "@/app/(main)/utils/NavListItems";
+import { Alert } from "@mui/material";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -66,6 +65,7 @@ export default function LogIn(props) {
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -78,13 +78,22 @@ export default function LogIn(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // if (emailError || passwordError || !validateInputs()) {
-    //   return;
-    // }
+    if (emailError || passwordError || !validateInputs()) {
+      return;
+    }
     const res = await signIn({ email, password });
 
     if (res.success) {
-      router.push("/home");
+      const navItem = mainListItems.find((item) =>
+        item.users.includes(res.user.role)
+      );
+      if (navItem) {
+        router.push(navItem.path);
+      } else {
+        router.push("/");
+      }
+    } else {
+      setErrorMessage(res.error);
     }
   };
 
@@ -118,10 +127,12 @@ export default function LogIn(props) {
     <AppTheme {...props}>
       <CssBaseline enableColorScheme />
       <SignInContainer direction="column" justifyContent="space-between">
-        <ColorModeSelect
-          sx={{ position: "fixed", top: "1rem", right: "1rem" }}
-        />
         <Card variant="outlined">
+          {errorMessage && (
+            <Alert severity="warning" onClose={() => setErrorMessage("")}>
+              {errorMessage}
+            </Alert>
+          )}
           <Typography
             component="h1"
             variant="h4"
@@ -154,7 +165,12 @@ export default function LogIn(props) {
                 fullWidth
                 variant="outlined"
                 color={emailError ? "error" : "primary"}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(false);
+                  setEmailErrorMessage("");
+                  setErrorMessage("");
+                }}
               />
             </FormControl>
             <FormControl>
@@ -172,7 +188,12 @@ export default function LogIn(props) {
                 fullWidth
                 variant="outlined"
                 color={passwordError ? "error" : "primary"}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordErrorMessage("");
+                  setPasswordError(false);
+                  setErrorMessage("");
+                }}
               />
             </FormControl>
 

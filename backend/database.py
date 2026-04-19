@@ -1,9 +1,10 @@
 from sqlmodel import SQLModel, create_engine, Session
-import os 
-from dotenv import load_dotenv
 
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+from core.config import DATABASE_URL
+
+# Import model registry so SQLModel metadata includes all tables.
+from models import Availability, StudyPlan, StudySession, Subject, User  # noqa: F401
+
 engine = create_engine(DATABASE_URL)
 
 def get_session():

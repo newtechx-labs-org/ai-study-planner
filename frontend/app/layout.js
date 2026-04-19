@@ -1,19 +1,22 @@
-"use client";
-
 import * as React from "react";
-import { Provider } from "react-redux";
-import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { store } from "@/store";
+import { Providers } from "./providers";
+
+export const metadata = {
+  title: "AI Study Planner",
+  description: "Build personalized study schedules with AI-powered planning",
+  icons: {
+    icon: "/favicon.svg",
+  },
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-toolpad-color-scheme="light">
+      <head>
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+      </head>
       <body>
-        <Provider store={store}>
-          <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-            {children}
-          </AppRouterCacheProvider>
-        </Provider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

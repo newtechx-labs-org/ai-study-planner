@@ -55,7 +55,7 @@ export default function SideMenu({ user }) {
         }}
       >
         <Typography variant="h5" component="h1" sx={{ color: "text.primary" }}>
-          {process.env.NEXT_PUBLIC_APP_NAME}
+          AI Study Planner
         </Typography>
       </Box>
       <Divider />
@@ -94,7 +94,8 @@ export default function SideMenu({ user }) {
               textTransform: "capitalize",
             }}
           >
-            {user.first_name + " " + user.last_name}
+            {[user.first_name, user.last_name].filter(Boolean).join(" ") ||
+              user.username}
           </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {user.email}

@@ -52,7 +52,7 @@ export async function getUserName(id, cache = {}) {
   try {
     if (cache[id]) return cache[id];
 
-    const { data } = await api.get(`/users/${id}/name`).then((r) => r.json());
+    const { data } = await api.get(`/users/${id}/name`);
     cache[id] = data.display_name;
     return cache[id];
   } catch (err) {
@@ -71,7 +71,7 @@ export async function signIn(data) {
         email: data.email,
         password: data.password,
       },
-      { withCredentials: true } // <== important to send & receive cookies
+      { withCredentials: true }, // <== important to send & receive cookies
     );
 
     const { user, access_token } = res.data;
@@ -91,7 +91,7 @@ export async function myProfile(email, password) {
 
     const { user } = res.data;
     dispatch(setCredentials({ user }));
-    return { success: true };
+    return { success: true, user };
   } catch (err) {
     return {
       success: false,
@@ -101,6 +101,9 @@ export async function myProfile(email, password) {
 }
 
 export async function signOut() {
-  dispatch(logout());
-  await api.post("/logout", {}, { withCredentials: true });
+  try {
+    await api.post("/logout", {}, { withCredentials: true });
+  } finally {
+    dispatch(logout());
+  }
 }

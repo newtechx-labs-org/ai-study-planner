@@ -4,19 +4,27 @@
 
 #### After downloading/cloning this branch:
 
-`cd main`
-
 `cd backend`
 
 # initialize venv
 
-`python -m venv venv`
+`python3 -m venv venv`
 
 # activate venv
 
 `source venv/bin/activate` or `venv\Scripts\activate`
 
+`python -m pip install --upgrade pip`
+
 `pip install -r requirements.txt`
+
+If you are in repository root, use:
+
+`pip install -r backend/requirements.txt`
+
+### Verify dependencies are installed
+
+`pip list`
 
 #### DB setup
 

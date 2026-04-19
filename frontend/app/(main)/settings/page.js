@@ -27,9 +27,9 @@ const profileSchema = yup.object().shape({
 const passwordSchema = yup.object().shape({
   current_password: yup
     .string()
-    .min(6)
+    .min(8)
     .required("Current password is required"),
-  new_password: yup.string().min(6).required(),
+  new_password: yup.string().min(8).required(),
   confirm: yup
     .string()
     .oneOf([yup.ref("new_password")], "Passwords do not match")
@@ -69,7 +69,7 @@ export default function Settings() {
 
   useEffect(() => {
     if (initial) reset(initial);
-  }, [initial]);
+  }, [initial, reset]);
 
   // Password form hook
   const {
@@ -181,7 +181,8 @@ export default function Settings() {
           Change Password
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          For your security, use a strong password you haven't used elsewhere.
+          For your security, use a strong password you haven&apos;t used
+          elsewhere.
         </Typography>
         <Box
           component="form"

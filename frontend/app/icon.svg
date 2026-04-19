@@ -1,0 +1,28 @@
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="192" height="192" fill="#4F46E5" rx="40"/>
+  
+  <!-- Brain icon (AI) -->
+  <g transform="translate(96, 96)">
+    <!-- Left brain -->
+    <path d="M -30 -15 Q -40 -25 -40 -5 Q -40 15 -30 20 Q -20 25 -10 20 L -10 -15 Q -20 -20 -30 -15" 
+          fill="#06B6D4" opacity="0.9"/>
+    
+    <!-- Right brain -->
+    <path d="M 30 -15 Q 40 -25 40 -5 Q 40 15 30 20 Q 20 25 10 20 L 10 -15 Q 20 -20 30 -15" 
+          fill="#A855F7" opacity="0.9"/>
+    
+    <!-- Center connection -->
+    <rect x="-8" y="-18" width="16" height="40" fill="#FFFFFF" rx="8"/>
+    
+    <!-- Book/Study element -->
+    <path d="M -15 15 L -15 30 Q -15 35 -10 35 L 10 35 Q 15 35 15 30 L 15 15" 
+          fill="#FFFFFF" stroke="#4F46E5" stroke-width="1.5"/>
+    <line x1="-5" y1="15" x2="-5" y2="35" stroke="#4F46E5" stroke-width="1" opacity="0.5"/>
+  </g>
+  
+  <!-- Stars around (accent) -->
+  <circle cx="160" cy="40" r="5" fill="#06B6D4" opacity="0.8"/>
+  <circle cx="32" cy="50" r="4" fill="#A855F7" opacity="0.8"/>
+  <circle cx="170" cy="150" r="3.5" fill="#FFFFFF" opacity="0.7"/>
+</svg>

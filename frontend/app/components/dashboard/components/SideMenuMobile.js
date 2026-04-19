@@ -7,14 +7,18 @@ import Drawer, { drawerClasses } from "@mui/material/Drawer";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
-import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
-import MenuButton from "./MenuButton";
 import MenuContent from "./MenuContent";
-import CardAlert from "./CardAlert";
 import { useRouter } from "next/navigation";
+import { signOut } from "@/services/userService";
 
 function SideMenuMobile({ open, toggleDrawer, user }) {
   const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut();
+    router.push("/signin");
+  };
+
   return (
     <Drawer
       anchor="right"
@@ -54,7 +58,8 @@ function SideMenuMobile({ open, toggleDrawer, user }) {
                 textTransform: "capitalize",
               }}
             >
-              {user.first_name + " " + user.last_name}
+              {[user.first_name, user.last_name].filter(Boolean).join(" ") ||
+                user.username}
             </Typography>
           </Stack>
         </Stack>
@@ -67,7 +72,7 @@ function SideMenuMobile({ open, toggleDrawer, user }) {
           <Button
             variant="outlined"
             fullWidth
-            onClick={() => router.push("/signin")}
+            onClick={handleLogout}
             startIcon={<LogoutRoundedIcon />}
           >
             Logout

@@ -6,19 +6,35 @@ import { useSelector } from "react-redux";
 import {
   Alert,
   Box,
-  Button,
-  Card,
   Grid,
   Stack,
   Typography,
+  Card,
+  Divider,
+  Chip,
 } from "@mui/material";
+import {
+  Add as AddIcon,
+  AutoGraph as AutoGraphIcon,
+  TrackChangesRounded as TrackChangesRoundedIcon,
+  MenuBookRounded as MenuBookRoundedIcon,
+  TimelapseRounded as TimelapseRoundedIcon,
+  EmojiEventsRounded as EmojiEventsRoundedIcon,
+  CalendarMonthRounded as CalendarMonthRoundedIcon,
+  RocketLaunchRounded as RocketLaunchRoundedIcon,
+  TodayRounded as TodayRoundedIcon,
+  EventAvailableRounded as EventAvailableRoundedIcon,
+} from "@mui/icons-material";
 
-import SummaryCard from "@/app/components/SummaryCard";
+import GradientCard from "@/app/components/primitives/GradientCard";
+import StatsCard from "@/app/components/primitives/StatsCard";
+import CustomButton from "@/app/components/primitives/CustomButton";
+import DataTable from "@/app/components/primitives/DataTable";
 import SubjectForm from "@/app/components/SubjectForm";
-import StudyTable from "@/app/components/StudyTable";
 import { createSubject, getSubjects } from "@/services/subjectService";
 import { generatePlan, getPlanDetails, getPlans } from "@/services/planService";
 import { getProgress } from "@/services/progressService";
+import theme from "@/app/theme/authenticatedTheme";
 
 function in30DaysIso() {
   const date = new Date();
@@ -107,67 +123,477 @@ export default function Home() {
       .slice(0, 6);
   }, [currentPlan]);
 
+  const completionPercentage = progress?.completion_percentage || 0;
+
+  const nextSession = upcomingSessions[0];
+
+  const tableColumns = [
+    { id: "date", label: "Date", minWidth: 120 },
+    { id: "subject_name", label: "Subject", minWidth: 150 },
+    {
+      id: "planned_hours",
+      label: "Planned Hours",
+      minWidth: 120,
+      align: "center",
+    },
+    { id: "status", label: "Status", minWidth: 100 },
+  ];
+
   return (
-    <Box sx={{ width: "100%", maxWidth: 1200 }}>
-      <Stack spacing={2}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            Welcome back, {user?.first_name || user?.username || "Learner"}
-          </Typography>
-          <Typography color="text.secondary">
-            Here is your study momentum for today.
-          </Typography>
-        </Box>
+    <Stack spacing={4} sx={{ width: "100%" }}>
+      {/* Error Alert */}
+      {error && <Alert severity="error">{error}</Alert>}
 
-        {error ? <Alert severity="error">{error}</Alert> : null}
+      {/* Hero Welcome Section */}
+      <GradientCard
+        title={`Welcome back, ${user?.first_name || user?.username || "Learner"}`}
+        subtitle="Your dashboard is ready. Review progress, launch a plan, and keep your momentum going."
+        icon={<TrackChangesRoundedIcon fontSize="medium" />}
+        action={
+          <Chip
+            label="Live Dashboard"
+            size="small"
+            sx={{
+              background: "rgba(255, 255, 255, 0.14)",
+              color: "#FFFFFF",
+              border: "1px solid rgba(255, 255, 255, 0.18)",
+              fontWeight: 700,
+            }}
+          />
+        }
+        sx={{
+          background: theme.colors.gradient,
+          p: { xs: 3, md: 4 },
+        }}
+      >
+        <Stack spacing={2.25} sx={{ mt: 2.5 }}>
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Chip
+              icon={
+                <MenuBookRoundedIcon
+                  sx={{ fontSize: "16px !important", color: "#FFFFFF" }}
+                />
+              }
+              label={`${subjects.length} subjects`}
+              size="small"
+              sx={{
+                background: "rgba(255, 255, 255, 0.12)",
+                color: "#FFFFFF",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                fontWeight: 700,
+                "& .MuiChip-icon": {
+                  color: "#FFFFFF",
+                },
+              }}
+            />
+            <Chip
+              icon={
+                <TodayRoundedIcon
+                  sx={{ fontSize: "16px !important", color: "#FFFFFF" }}
+                />
+              }
+              label={`${plans.length} plans`}
+              size="small"
+              sx={{
+                background: "rgba(255, 255, 255, 0.12)",
+                color: "#FFFFFF",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                fontWeight: 700,
+                "& .MuiChip-icon": {
+                  color: "#FFFFFF",
+                },
+              }}
+            />
+            <Chip
+              icon={
+                <EventAvailableRoundedIcon
+                  sx={{ fontSize: "16px !important", color: "#FFFFFF" }}
+                />
+              }
+              label={`${completionPercentage}% complete`}
+              size="small"
+              sx={{
+                background: "rgba(255, 255, 255, 0.12)",
+                color: "#FFFFFF",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                fontWeight: 700,
+                "& .MuiChip-icon": {
+                  color: "#FFFFFF",
+                },
+              }}
+            />
+          </Stack>
 
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <SummaryCard title="Total Subjects" value={subjects.length} />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <SummaryCard
-              title="Total Study Hours"
-              value={totalHours}
-              subtitle="Estimated workload"
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <SummaryCard
-              title="Completed %"
-              value={`${progress?.completion_percentage || 0}%`}
-              subtitle="Latest plan completion"
-            />
-          </Grid>
+          <Stack
+            direction={{ xs: "column", md: "row" }}
+            spacing={2}
+            alignItems={{ md: "stretch" }}
+          >
+            <Card
+              sx={{
+                flex: 1,
+                borderRadius: theme.borderRadius.xl,
+                backgroundColor: "rgba(255, 255, 255, 0.12)",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                boxShadow: "none",
+                p: 2.25,
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <Stack spacing={1.75}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Box
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: theme.borderRadius.md,
+                      backgroundColor: "rgba(255, 255, 255, 0.16)",
+                      display: "grid",
+                      placeItems: "center",
+                    }}
+                  >
+                    <RocketLaunchRoundedIcon sx={{ color: "#FFFFFF" }} />
+                  </Box>
+                  <Stack spacing={0.2}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: "rgba(255, 255, 255, 0.78)" }}
+                    >
+                      Today&apos;s focus
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        color: "#FFFFFF",
+                        fontWeight: 700,
+                        fontSize: "18px",
+                      }}
+                    >
+                      Stay on track with your active plan
+                    </Typography>
+                  </Stack>
+                </Stack>
+
+                <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.16)" }} />
+
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={1.25}
+                  sx={{ width: "100%" }}
+                >
+                  <CustomButton
+                    variant="secondary"
+                    size="medium"
+                    startIcon={<AddIcon />}
+                    onClick={() => setOpenSubjectDialog(true)}
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.12)",
+                      color: "#FFFFFF",
+                      borderColor: "rgba(255, 255, 255, 0.22)",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.18)",
+                        borderColor: "rgba(255, 255, 255, 0.3)",
+                        color: "#FFFFFF",
+                      },
+                    }}
+                  >
+                    Add Subject
+                  </CustomButton>
+                  <CustomButton
+                    variant="primary"
+                    size="medium"
+                    startIcon={<AutoGraphIcon />}
+                    onClick={handleGeneratePlan}
+                    sx={{
+                      background: "#FFFFFF",
+                      color: theme.colors.primary.main,
+                      "&:hover": {
+                        background: "rgba(255, 255, 255, 0.92)",
+                        color: theme.colors.primary.main,
+                      },
+                    }}
+                  >
+                    Generate Plan
+                  </CustomButton>
+                </Stack>
+              </Stack>
+            </Card>
+
+            <Card
+              sx={{
+                width: { xs: "100%", md: 320 },
+                borderRadius: theme.borderRadius.xl,
+                backgroundColor: "rgba(255, 255, 255, 0.12)",
+                border: "1px solid rgba(255, 255, 255, 0.18)",
+                boxShadow: "none",
+                p: 2.25,
+                backdropFilter: "blur(12px)",
+              }}
+            >
+              <Stack spacing={1.75}>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "rgba(255, 255, 255, 0.82)", fontWeight: 600 }}
+                >
+                  Next session
+                </Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    color: "#FFFFFF",
+                    fontWeight: 800,
+                    fontSize: "19px",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  {nextSession
+                    ? nextSession.subject_name
+                    : "No session scheduled"}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{ color: "rgba(255, 255, 255, 0.78)" }}
+                >
+                  {nextSession
+                    ? new Date(nextSession.date).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : "Generate a plan to see upcoming sessions here."}
+                </Typography>
+
+                <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.16)" }} />
+
+                <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                  <Chip
+                    label={`${totalHours} hrs total`}
+                    size="small"
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.12)",
+                      color: "#FFFFFF",
+                      border: "1px solid rgba(255, 255, 255, 0.18)",
+                      fontWeight: 700,
+                    }}
+                  />
+                  <Chip
+                    label={`${upcomingSessions.length} upcoming`}
+                    size="small"
+                    sx={{
+                      backgroundColor: "rgba(255, 255, 255, 0.12)",
+                      color: "#FFFFFF",
+                      border: "1px solid rgba(255, 255, 255, 0.18)",
+                      fontWeight: 700,
+                    }}
+                  />
+                </Stack>
+              </Stack>
+            </Card>
+          </Stack>
+        </Stack>
+      </GradientCard>
+
+      {/* KPI Stats Grid */}
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <StatsCard
+            icon={<MenuBookRoundedIcon fontSize="small" />}
+            title="Total Subjects"
+            value={subjects.length}
+            subtitle="Active subjects in your plan"
+            variant="gradient"
+            gradient="linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)"
+          />
         </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <StatsCard
+            icon={<TimelapseRoundedIcon fontSize="small" />}
+            title="Total Study Hours"
+            value={totalHours}
+            subtitle="Estimated workload"
+            trend={totalHours > 0 ? "+12%" : "0%"}
+            trendPositive={true}
+            variant="gradient"
+            gradient="linear-gradient(135deg, #0891B2 0%, #2563EB 100%)"
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <StatsCard
+            icon={<EmojiEventsRoundedIcon fontSize="small" />}
+            title="Completion"
+            value={`${completionPercentage}%`}
+            subtitle="Latest plan progress"
+            progress={completionPercentage}
+            variant="gradient"
+            gradient="linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)"
+          />
+        </Grid>
+      </Grid>
 
-        <Card variant="outlined" sx={{ p: 2 }}>
+      {/* Quick Actions Section */}
+      <Card
+        sx={{
+          borderRadius: theme.borderRadius.card,
+          border: `1px solid ${theme.colors.neutral[200]}`,
+          p: 3,
+          backgroundColor: "#FFFFFF",
+          boxShadow: theme.shadows.sm,
+        }}
+      >
+        <Stack spacing={2}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              color: theme.colors.neutral[900],
+            }}
+          >
+            Quick Actions
+          </Typography>
+          <Divider />
           <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-            <Button
-              variant="contained"
+            <CustomButton
+              variant="primary"
+              size="medium"
+              startIcon={<AddIcon />}
               onClick={() => setOpenSubjectDialog(true)}
             >
               Add Subject
-            </Button>
-            <Button variant="outlined" onClick={handleGeneratePlan}>
+            </CustomButton>
+            <CustomButton
+              variant="secondary"
+              size="medium"
+              startIcon={<AutoGraphIcon />}
+              onClick={handleGeneratePlan}
+            >
               Generate Plan
-            </Button>
+            </CustomButton>
           </Stack>
-        </Card>
+        </Stack>
+      </Card>
 
-        <Card variant="outlined" sx={{ p: 2 }}>
-          <Typography variant="h6" sx={{ mb: 1.5 }}>
-            Upcoming Study Sessions
-          </Typography>
-          <StudyTable rows={upcomingSessions} />
-        </Card>
-      </Stack>
+      {/* Upcoming Sessions Section */}
+      <Card
+        sx={{
+          borderRadius: theme.borderRadius.card,
+          border: `1px solid ${theme.colors.neutral[200]}`,
+          p: 3,
+          backgroundColor: "#FFFFFF",
+          boxShadow: theme.shadows.sm,
+        }}
+      >
+        <Stack spacing={2}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={1.5}
+            alignItems={{ sm: "center" }}
+            justifyContent="space-between"
+          >
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Box
+                sx={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: theme.borderRadius.md,
+                  background: `${theme.colors.primary.main}14`,
+                  color: theme.colors.primary.main,
+                  display: "grid",
+                  placeItems: "center",
+                }}
+              >
+                <CalendarMonthRoundedIcon fontSize="small" />
+              </Box>
+              <Stack spacing={0.3}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 700,
+                    color: theme.colors.neutral[900],
+                  }}
+                >
+                  Upcoming Study Sessions
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: theme.colors.neutral[500],
+                  }}
+                >
+                  Your next {upcomingSessions.length} scheduled study sessions
+                </Typography>
+              </Stack>
+            </Stack>
+            <Chip
+              label={`${upcomingSessions.length} sessions`}
+              size="small"
+              sx={{
+                background: `${theme.colors.primary.main}14`,
+                color: theme.colors.primary.main,
+                border: `1px solid ${theme.colors.primary.main}30`,
+                fontWeight: 700,
+              }}
+            />
+          </Stack>
 
-      <SubjectForm
-        open={openSubjectDialog}
-        onClose={() => setOpenSubjectDialog(false)}
-        onSubmit={handleCreateSubject}
-      />
-    </Box>
+          <Divider />
+
+          <DataTable
+            columns={tableColumns}
+            rows={upcomingSessions.map((session) => ({
+              date: new Date(session.date).toLocaleDateString("en-US", {
+                weekday: "short",
+                month: "short",
+                day: "numeric",
+              }),
+              subject_name: session.subject_name,
+              planned_hours: `${session.planned_hours}h`,
+              status: session.status === "Completed" ? "Completed" : "Upcoming",
+            }))}
+            emptyMessage="No upcoming study sessions. Create a plan to get started!"
+            sx={{
+              borderRadius: theme.borderRadius.lg,
+              border: `1px solid ${theme.colors.neutral[200]}`,
+              boxShadow: "none",
+            }}
+            renderCell={(columnId, value) => {
+              if (columnId === "planned_hours") {
+                return (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: 700,
+                      color: theme.colors.neutral[800],
+                    }}
+                  >
+                    {value}
+                  </Typography>
+                );
+              }
+
+              if (columnId === "status") {
+                const isCompleted = value === "Completed";
+                return (
+                  <Chip
+                    label={value}
+                    size="small"
+                    sx={{
+                      backgroundColor: isCompleted
+                        ? theme.colors.success
+                        : theme.colors.info,
+                      color: "#FFFFFF",
+                      fontWeight: 700,
+                      fontSize: "11px",
+                      borderRadius: "999px",
+                    }}
+                  />
+                );
+              }
+
+              return value;
+            }}
+          />
+        </Stack>
+      </Card>
+    </Stack>
   );
 }

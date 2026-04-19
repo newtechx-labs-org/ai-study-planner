@@ -85,9 +85,9 @@ export default function Topbar() {
         selected={isActive(item.path)}
         onClick={() => setMobileDrawerOpen(false)}
         sx={{
-          my: 0.5,
-          px: 2,
-          py: 1.5,
+          my: 0.75,
+          px: 2.25,
+          py: 1.35,
           borderRadius: theme.borderRadius.md,
           color: isActive(item.path)
             ? theme.colors.primary.main
@@ -103,11 +103,12 @@ export default function Topbar() {
             color: theme.colors.primary.main,
           },
           "& .MuiListItemIcon-root": {
-            minWidth: 40,
+            minWidth: 36,
             color: "inherit",
           },
         }}
       >
+        <ListItemIcon>{item.icon}</ListItemIcon>
         <ListItemText
           primary={item.text}
           primaryTypographyProps={{
@@ -131,7 +132,8 @@ export default function Topbar() {
       <AppBar
         position="fixed"
         sx={{
-          backgroundColor: "#FFFFFF",
+          backgroundColor: "rgba(255, 255, 255, 0.92)",
+          backdropFilter: "blur(14px)",
           borderBottom: `1px solid ${theme.colors.neutral[200]}`,
           boxShadow: theme.shadows.sm,
           zIndex: muiTheme.zIndex.drawer + 1,
@@ -181,6 +183,11 @@ export default function Topbar() {
               onClick={handleMobileDrawerToggle}
               sx={{
                 color: theme.colors.neutral[700],
+                border: `1px solid ${theme.colors.neutral[200]}`,
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+                "&:hover": {
+                  backgroundColor: theme.colors.neutral[100],
+                },
               }}
             >
               <MenuIcon />
@@ -294,7 +301,8 @@ export default function Topbar() {
           sx: {
             width: "100%",
             maxWidth: 300,
-            backgroundColor: "#FFFFFF",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,0.96) 100%)",
             borderRight: `1px solid ${theme.colors.neutral[200]}`,
             mt: `${theme.topbar.height}`,
           },

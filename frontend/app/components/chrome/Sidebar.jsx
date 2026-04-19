@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Drawer,
   Box,
@@ -54,10 +54,10 @@ export default function Sidebar() {
         component="a"
         selected={isActive(item.path)}
         sx={{
-          my: 0.5,
+          my: 0.75,
           mx: 1,
-          px: 2,
-          py: 1.5,
+          px: 2.25,
+          py: 1.35,
           borderRadius: theme.borderRadius.md,
           color: isActive(item.path)
             ? theme.colors.primary.main
@@ -74,7 +74,7 @@ export default function Sidebar() {
           },
           transition: theme.transitions.normal,
           "& .MuiListItemIcon-root": {
-            minWidth: 40,
+            minWidth: 36,
             color: "inherit",
           },
         }}
@@ -115,7 +115,8 @@ export default function Sidebar() {
         width: theme.sidebar.width,
         "& .MuiDrawer-paper": {
           width: theme.sidebar.width,
-          backgroundColor: theme.sidebar.backgroundColor,
+          background:
+            "linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,0.96) 100%)",
           border: `1px solid ${theme.sidebar.borderColor}`,
           boxShadow: theme.shadows.sm,
           overflowX: "hidden",
@@ -132,12 +133,27 @@ export default function Sidebar() {
         }}
       >
         {/* Logo / Branding */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: 2.5, px: 0.5 }}>
           <LandingLogo />
         </Box>
 
         {/* Navigation Items */}
         <Box sx={{ flex: 1, overflowY: "auto" }}>
+          <Typography
+            variant="caption"
+            sx={{
+              color: theme.colors.neutral[500],
+              display: "block",
+              px: 2,
+              mb: 0.75,
+              mt: 0.5,
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.55px",
+            }}
+          >
+            Main
+          </Typography>
           <List sx={{ p: 0 }}>{renderListItems(mainListItems)}</List>
 
           <Divider sx={{ my: 2, borderColor: theme.colors.neutral[200] }} />
@@ -167,8 +183,9 @@ export default function Sidebar() {
               sx={{
                 p: 1.5,
                 borderRadius: theme.borderRadius.md,
-                backgroundColor: theme.colors.neutral[50],
+                backgroundColor: "rgba(255, 255, 255, 0.92)",
                 border: `1px solid ${theme.colors.neutral[200]}`,
+                boxShadow: `0 8px 20px ${theme.colors.neutral[900]}10`,
               }}
               spacing={1}
               direction="row"

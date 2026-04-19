@@ -26,11 +26,11 @@ export default function LandingNavbar({ onLogin, onRegister }) {
       elevation={0}
       sx={{
         background: scrolled
-          ? "rgba(255, 255, 255, 0.82)"
-          : "linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.2) 100%)",
-        backdropFilter: "blur(10px)",
+          ? "rgba(255, 255, 255, 0.9)"
+          : "linear-gradient(180deg, rgba(255,255,255,0.58) 0%, rgba(255,255,255,0.22) 100%)",
+        backdropFilter: "blur(14px)",
         borderBottom: "1px solid",
-        borderColor: scrolled ? "rgba(79, 70, 229, 0.18)" : "transparent",
+        borderColor: scrolled ? "rgba(14, 165, 233, 0.2)" : "transparent",
         transition: "all 220ms ease",
       }}
     >
@@ -39,29 +39,68 @@ export default function LandingNavbar({ onLogin, onRegister }) {
       >
         <LandingLogo />
         <Box sx={{ flexGrow: 1 }} />
+
         <Stack
           direction="row"
-          spacing={2.5}
+          spacing={1.25}
           alignItems="center"
           sx={{ display: { xs: "none", md: "flex" } }}
         >
           <Link
             href="#features"
             underline="none"
-            color="#334155"
-            sx={{ fontWeight: 600 }}
+            color="#0F172A"
+            sx={{
+              fontWeight: 700,
+              fontSize: 14,
+              px: 1.3,
+              py: 0.85,
+              borderRadius: "999px",
+              transition: "all 180ms ease",
+              "&:hover": {
+                backgroundColor: "rgba(14,165,233,0.11)",
+                color: "#0C4A6E",
+              },
+            }}
           >
             Features
           </Link>
           <Link
             href="#how-it-works"
             underline="none"
-            color="#334155"
-            sx={{ fontWeight: 600 }}
+            color="#0F172A"
+            sx={{
+              fontWeight: 700,
+              fontSize: 14,
+              px: 1.3,
+              py: 0.85,
+              borderRadius: "999px",
+              transition: "all 180ms ease",
+              "&:hover": {
+                backgroundColor: "rgba(14,165,233,0.11)",
+                color: "#0C4A6E",
+              },
+            }}
           >
             How it Works
           </Link>
-          <Button variant="text" onClick={onLogin} sx={{ fontWeight: 700 }}>
+        </Stack>
+
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ ml: 1.5 }}>
+          <Button
+            variant="text"
+            onClick={onLogin}
+            sx={{
+              fontWeight: 700,
+              color: "#0F172A",
+              borderRadius: "999px",
+              px: { xs: 1.6, md: 2.2 },
+              py: 0.75,
+              "&:hover": {
+                backgroundColor: "rgba(15,23,42,0.06)",
+              },
+            }}
+          >
             Login
           </Button>
           <Button
@@ -70,9 +109,12 @@ export default function LandingNavbar({ onLogin, onRegister }) {
             sx={{
               fontWeight: 700,
               borderRadius: "999px",
-              px: 2.25,
-              background: "linear-gradient(90deg, #4F46E5 0%, #06B6D4 100%)",
-              boxShadow: "0 10px 24px rgba(79, 70, 229, 0.35)",
+              px: { xs: 1.8, md: 2.4 },
+              background: "linear-gradient(90deg, #0284C7 0%, #10B981 100%)",
+              boxShadow: "0 10px 24px rgba(2,132,199,0.34)",
+              "&:hover": {
+                background: "linear-gradient(90deg, #0369A1 0%, #0F766E 100%)",
+              },
             }}
           >
             Register

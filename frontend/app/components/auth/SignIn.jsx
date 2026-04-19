@@ -252,6 +252,26 @@ export default function SignIn() {
           Sign Up
         </Link>
       </Stack>
+
+      <Stack direction="row" justifyContent="center" sx={{ mt: 1.2 }}>
+        <Link
+          component="button"
+          type="button"
+          onClick={() => router.push("/")}
+          sx={{
+            border: 0,
+            bgcolor: "transparent",
+            p: 0,
+            color: "#2563EB",
+            fontWeight: 700,
+            textDecoration: "none",
+            cursor: "pointer",
+            "&:hover": { textDecoration: "underline" },
+          }}
+        >
+          Back to Landing Page
+        </Link>
+      </Stack>
     </AuthLayout>
   );
 }

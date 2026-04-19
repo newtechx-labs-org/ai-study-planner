@@ -18,8 +18,8 @@ export default function LandingLogo({ compact = false, inverse = false }) {
           display: "grid",
           placeItems: "center",
           background:
-            "linear-gradient(135deg, #4F46E5 0%, #06B6D4 55%, #A855F7 100%)",
-          boxShadow: "0 10px 25px rgba(79, 70, 229, 0.35)",
+            "linear-gradient(135deg, #0284C7 0%, #10B981 55%, #F59E0B 100%)",
+          boxShadow: "0 10px 25px rgba(2, 132, 199, 0.35)",
         }}
       >
         <AutoAwesomeRoundedIcon

@@ -39,15 +39,29 @@ export default function HowItWorksSection() {
     <Box id="how-it-works" sx={{ py: { xs: 7, md: 10 } }}>
       <Container maxWidth="lg">
         <Typography
+          sx={{
+            textAlign: "center",
+            color: "#0F766E",
+            fontWeight: 800,
+            textTransform: "uppercase",
+            letterSpacing: "0.09em",
+            fontSize: 12,
+            mb: 1,
+          }}
+        >
+          Three Steps
+        </Typography>
+        <Typography
           variant="h3"
           sx={{
             textAlign: "center",
             fontWeight: 900,
             color: "#0f172a",
             letterSpacing: "-0.02em",
+            fontSize: { xs: "2rem", md: "2.7rem" },
           }}
         >
-          How it works
+          Simple setup, serious outcomes
         </Typography>
         <Grid container spacing={2.2} sx={{ mt: 3.2 }}>
           {steps.map((step, idx) => {
@@ -61,10 +75,12 @@ export default function HowItWorksSection() {
                   transition={{ duration: 0.45, delay: idx * 0.08 }}
                   sx={{
                     height: "100%",
-                    borderRadius: "20px",
+                    borderRadius: "22px",
                     p: 2.2,
-                    border: "1px solid rgba(79,70,229,0.1)",
-                    boxShadow: "0 12px 28px rgba(15,23,42,0.06)",
+                    border: "1px solid rgba(15,23,42,0.1)",
+                    background:
+                      "linear-gradient(165deg, rgba(255,255,255,1) 0%, rgba(240,253,250,0.5) 100%)",
+                    boxShadow: "0 14px 30px rgba(15,23,42,0.08)",
                   }}
                 >
                   <Stack
@@ -75,19 +91,23 @@ export default function HowItWorksSection() {
                   >
                     <Box
                       sx={{
-                        width: 38,
-                        height: 38,
+                        width: 40,
+                        height: 40,
                         borderRadius: "11px",
                         display: "grid",
                         placeItems: "center",
                         color: step.color,
-                        bgcolor: `${step.color}20`,
+                        bgcolor: `${step.color}1F`,
                       }}
                     >
                       <Icon fontSize="small" />
                     </Box>
                     <Typography
-                      sx={{ fontWeight: 900, color: "#0f172a" }}
+                      sx={{
+                        fontWeight: 900,
+                        color: "#0f172a",
+                        letterSpacing: "0.04em",
+                      }}
                     >{`0${idx + 1}`}</Typography>
                   </Stack>
                   <Typography sx={{ fontWeight: 800, color: "#0f172a" }}>

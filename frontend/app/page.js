@@ -37,7 +37,7 @@ export default function HomePage() {
       sx={{
         minHeight: "100dvh",
         background:
-          "radial-gradient(1200px 700px at 5% -10%, rgba(79,70,229,0.22), transparent 55%), radial-gradient(900px 560px at 95% 0%, rgba(6,182,212,0.18), transparent 60%), linear-gradient(180deg, #F8FAFF 0%, #F8FAFC 45%, #FFFFFF 100%)",
+          "radial-gradient(1200px 700px at 0% -18%, rgba(14,165,233,0.2), transparent 58%), radial-gradient(980px 620px at 100% 0%, rgba(16,185,129,0.16), transparent 60%), linear-gradient(180deg, #F2FAFF 0%, #F8FAFC 44%, #FFFFFF 100%)",
       }}
     >
       <LandingNavbar

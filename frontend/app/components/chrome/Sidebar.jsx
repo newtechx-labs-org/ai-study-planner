@@ -27,7 +27,10 @@ import LandingLogo from "@/app/components/landing/LandingLogo";
 import theme from "@/app/theme/authenticatedTheme";
 import { logout } from "@/store/slices/authSlice";
 import { signOut } from "@/services/userService";
-import { Logout as LogoutIcon } from "@mui/icons-material";
+import {
+  Logout as LogoutIcon,
+  HomeRounded as HomeRoundedIcon,
+} from "@mui/icons-material";
 
 /**
  * Premium Sidebar Component
@@ -230,6 +233,42 @@ export default function Sidebar() {
             </Stack>
 
             <Box sx={{ mt: 1 }}>
+              <ListItemButton
+                href="/"
+                component="a"
+                sx={{
+                  mb: 1,
+                  px: 2,
+                  py: 1.25,
+                  borderRadius: theme.borderRadius.md,
+                  color: theme.colors.primary.main,
+                  backgroundColor: `${theme.colors.primary.main}10`,
+                  border: `1px solid ${theme.colors.primary.main}26`,
+                  transition: theme.transitions.normal,
+                  "&:hover": {
+                    backgroundColor: `${theme.colors.primary.main}18`,
+                    color: theme.colors.primary.main,
+                  },
+                  "& .MuiListItemIcon-root": {
+                    minWidth: 40,
+                    color: "inherit",
+                  },
+                }}
+              >
+                <ListItemIcon>
+                  <HomeRoundedIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Landing Page"
+                  primaryTypographyProps={{
+                    sx: {
+                      fontSize: "13px",
+                      fontWeight: 600,
+                    },
+                  }}
+                />
+              </ListItemButton>
+
               <ListItemButton
                 onClick={handleLogout}
                 sx={{

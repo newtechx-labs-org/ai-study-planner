@@ -58,8 +58,28 @@ const features = [
 
 export default function FeaturesSection() {
   return (
-    <Box id="features" sx={{ py: { xs: 8, md: 11 } }}>
+    <Box
+      id="features"
+      sx={{
+        py: { xs: 8, md: 11 },
+        background:
+          "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(236,253,245,0.55) 45%, rgba(255,255,255,0.92) 100%)",
+      }}
+    >
       <Container maxWidth="lg">
+        <Typography
+          sx={{
+            textAlign: "center",
+            color: "#0369A1",
+            fontWeight: 800,
+            textTransform: "uppercase",
+            letterSpacing: "0.09em",
+            fontSize: 12,
+            mb: 1,
+          }}
+        >
+          Platform Advantages
+        </Typography>
         <Typography
           variant="h3"
           sx={{
@@ -67,9 +87,10 @@ export default function FeaturesSection() {
             textAlign: "center",
             color: "#0f172a",
             letterSpacing: "-0.02em",
+            fontSize: { xs: "2rem", md: "2.8rem" },
           }}
         >
-          Built for serious learners
+          Everything your study rhythm needs
         </Typography>
         <Typography
           sx={{
@@ -78,10 +99,11 @@ export default function FeaturesSection() {
             color: "#475569",
             maxWidth: 700,
             mx: "auto",
+            fontSize: { xs: 15, md: 17 },
           }}
         >
-          Everything you need to convert a study goal into a clear, trackable,
-          and adaptive plan.
+          Map goals to weekly action, recover quickly when plans shift, and keep
+          momentum with a system that adapts to your real calendar.
         </Typography>
 
         <Grid
@@ -104,14 +126,15 @@ export default function FeaturesSection() {
                     height: "100%",
                     p: 2.6,
                     borderRadius: "22px",
-                    border: `1px solid ${alpha(feature.color, 0.15)}`,
-                    background: "#ffffff",
-                    boxShadow: `0 2px 8px ${alpha("#000000", 0.06)}, 0 4px 16px ${alpha("#000000", 0.04)}`,
+                    border: `1px solid ${alpha(feature.color, 0.19)}`,
+                    background:
+                      "linear-gradient(160deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.94) 100%)",
+                    boxShadow: `0 8px 22px ${alpha("#000000", 0.05)}, 0 3px 8px ${alpha("#000000", 0.04)}`,
                     backdropFilter: "blur(8px)",
                     transition: "all 0.3s ease",
                     "&:hover": {
-                      boxShadow: `0 8px 24px ${alpha(feature.color, 0.12)}, 0 2px 8px ${alpha("#000000", 0.06)}`,
-                      borderColor: alpha(feature.color, 0.25),
+                      boxShadow: `0 14px 32px ${alpha(feature.color, 0.16)}, 0 2px 8px ${alpha("#000000", 0.06)}`,
+                      borderColor: alpha(feature.color, 0.32),
                     },
                   }}
                 >

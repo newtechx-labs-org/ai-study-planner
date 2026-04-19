@@ -8,9 +8,10 @@ import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import EventAvailableRoundedIcon from "@mui/icons-material/EventAvailableRounded";
-import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
-import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
+import Divider from "@mui/material/Divider";
+import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
+import AutoGraphRoundedIcon from "@mui/icons-material/AutoGraphRounded";
+import SchoolRoundedIcon from "@mui/icons-material/SchoolRounded";
 
 const MotionBox = motion.create(Box);
 const MotionCard = motion.create(Card);
@@ -21,7 +22,7 @@ export default function HeroSection({ onLogin, onRegister }) {
       container
       spacing={4}
       alignItems="center"
-      sx={{ pt: { xs: 12, md: 16 }, pb: { xs: 8, md: 12 } }}
+      sx={{ pt: { xs: 12, md: 16 }, pb: { xs: 9, md: 12 } }}
     >
       <Grid size={{ xs: 12, md: 6 }}>
         <MotionBox
@@ -30,25 +31,27 @@ export default function HeroSection({ onLogin, onRegister }) {
           transition={{ duration: 0.65, ease: "easeOut" }}
         >
           <Chip
-            label="AI-Powered Study Workflow"
+            label="AI Study Planning Platform"
             sx={{
               mb: 2,
-              fontWeight: 700,
-              color: "#3730A3",
-              bgcolor: "rgba(79, 70, 229, 0.12)",
+              fontWeight: 800,
+              color: "#0C4A6E",
+              bgcolor: "rgba(14, 165, 233, 0.14)",
+              border: "1px solid rgba(14, 165, 233, 0.28)",
             }}
           />
           <Typography
             variant="h2"
             sx={{
               fontWeight: 900,
-              lineHeight: 1.08,
+              lineHeight: 1.05,
               letterSpacing: "-0.03em",
               color: "#0f172a",
-              fontSize: { xs: "2.2rem", md: "3.4rem" },
+              fontSize: { xs: "2.2rem", md: "3.65rem" },
+              maxWidth: 620,
             }}
           >
-            Plan Smarter. Study Better with AI
+            Build a study system that actually fits your life
           </Typography>
           <Typography
             sx={{
@@ -56,12 +59,47 @@ export default function HeroSection({ onLogin, onRegister }) {
               color: "#334155",
               fontSize: { xs: 16, md: 19 },
               maxWidth: 560,
+              lineHeight: 1.72,
             }}
           >
-            Generate personalized study schedules based on your time and
-            subjects. Turn scattered prep into focused momentum with adaptive
-            planning.
+            Turn your subjects, deadlines, and weekly availability into an
+            adaptive plan that you can follow, adjust, and complete with
+            confidence.
           </Typography>
+
+          <Stack
+            direction="row"
+            spacing={1}
+            flexWrap="wrap"
+            useFlexGap
+            sx={{ mt: 2.4 }}
+          >
+            <Chip
+              icon={<AccessTimeRoundedIcon />}
+              label="Time-aware scheduling"
+              size="small"
+              sx={{
+                bgcolor: "rgba(2,132,199,0.1)",
+                color: "#0C4A6E",
+                border: "1px solid rgba(2,132,199,0.2)",
+                fontWeight: 700,
+                "& .MuiChip-icon": { color: "#0C4A6E" },
+              }}
+            />
+            <Chip
+              icon={<AutoGraphRoundedIcon />}
+              label="Progress-driven adjustments"
+              size="small"
+              sx={{
+                bgcolor: "rgba(16,185,129,0.1)",
+                color: "#065F46",
+                border: "1px solid rgba(16,185,129,0.2)",
+                fontWeight: 700,
+                "& .MuiChip-icon": { color: "#065F46" },
+              }}
+            />
+          </Stack>
+
           <Stack
             direction={{ xs: "column", sm: "row" }}
             spacing={1.5}
@@ -73,116 +111,184 @@ export default function HeroSection({ onLogin, onRegister }) {
               onClick={onRegister}
               sx={{
                 borderRadius: "999px",
-                px: 3,
-                py: 1.3,
-                fontWeight: 700,
-                background: "linear-gradient(90deg, #4F46E5 0%, #06B6D4 100%)",
-                boxShadow: "0 16px 30px rgba(79, 70, 229, 0.35)",
+                px: 3.2,
+                py: 1.25,
+                fontWeight: 800,
+                background: "linear-gradient(90deg, #0284C7 0%, #10B981 100%)",
+                boxShadow: "0 16px 30px rgba(2, 132, 199, 0.34)",
                 transition: "transform 180ms ease",
-                "&:hover": { transform: "translateY(-2px)" },
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  background:
+                    "linear-gradient(90deg, #0369A1 0%, #0F766E 100%)",
+                },
               }}
             >
-              Get Started
+              Start Free
             </Button>
             <Button
               variant="outlined"
               size="large"
               onClick={onLogin}
-              sx={{ borderRadius: "999px", px: 3, py: 1.3, fontWeight: 700 }}
+              sx={{
+                borderRadius: "999px",
+                px: 3,
+                py: 1.25,
+                fontWeight: 800,
+                borderColor: "rgba(15, 23, 42, 0.2)",
+                color: "#0F172A",
+              }}
             >
-              Learn More
+              Sign In
             </Button>
           </Stack>
         </MotionBox>
       </Grid>
+
       <Grid size={{ xs: 12, md: 6 }}>
         <MotionCard
           initial={{ opacity: 0, x: 24 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.7, ease: "easeOut", delay: 0.08 }}
           sx={{
-            borderRadius: "24px",
+            borderRadius: "26px",
             p: 2.5,
             background:
-              "linear-gradient(160deg, rgba(255,255,255,0.85) 0%, rgba(245,248,255,0.88) 100%)",
-            border: "1px solid rgba(79, 70, 229, 0.14)",
-            backdropFilter: "blur(10px)",
+              "linear-gradient(162deg, rgba(255,255,255,0.95) 0%, rgba(240,249,255,0.9) 100%)",
+            border: "1px solid rgba(2,132,199,0.18)",
             boxShadow: "0 18px 45px rgba(15, 23, 42, 0.12)",
           }}
         >
-          <Typography sx={{ fontWeight: 800, mb: 1.8, color: "#1e293b" }}>
-            Weekly Plan Preview
-          </Typography>
-          <Stack spacing={1.2}>
-            {[
-              {
-                icon: <MenuBookRoundedIcon fontSize="small" />,
-                title: "Math Revision",
-                time: "Mon 7:00 PM",
-                color: "#4F46E5",
-              },
-              {
-                icon: <EventAvailableRoundedIcon fontSize="small" />,
-                title: "Physics Practice",
-                time: "Wed 6:30 PM",
-                color: "#06B6D4",
-              },
-              {
-                icon: <InsightsRoundedIcon fontSize="small" />,
-                title: "Progress Tracking",
-                time: "Sat 10:00 AM",
-                color: "#A855F7",
-              },
-            ].map((item, idx) => (
-              <MotionBox
-                key={item.title}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + idx * 0.08, duration: 0.35 }}
+          <Stack spacing={2}>
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <Typography
+                sx={{ fontWeight: 800, color: "#1e293b", fontSize: 18 }}
+              >
+                Weekly Plan Snapshot
+              </Typography>
+              <Chip
+                icon={<SchoolRoundedIcon fontSize="small" />}
+                label="4 subjects"
+                size="small"
                 sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  p: 1.4,
+                  bgcolor: "rgba(2,132,199,0.1)",
+                  color: "#0C4A6E",
+                  border: "1px solid rgba(2,132,199,0.2)",
+                  fontWeight: 700,
+                  "& .MuiChip-icon": { color: "#0C4A6E" },
+                }}
+              />
+            </Stack>
+
+            <Card
+              sx={{
+                p: 2,
+                borderRadius: "16px",
+                border: "1px solid rgba(15,23,42,0.08)",
+                boxShadow: "none",
+                bgcolor: "#FFFFFF",
+              }}
+            >
+              <Stack spacing={1.3}>
+                {[
+                  {
+                    title: "Math Revision",
+                    time: "Mon • 7:00 PM - 8:30 PM",
+                    status: "Planned",
+                  },
+                  {
+                    title: "Physics Practice",
+                    time: "Wed • 6:30 PM - 8:00 PM",
+                    status: "Planned",
+                  },
+                  {
+                    title: "Chemistry Quiz",
+                    time: "Fri • 7:00 PM - 8:00 PM",
+                    status: "Completed",
+                  },
+                ].map((item, index) => (
+                  <Box key={item.title}>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Box>
+                        <Typography sx={{ fontWeight: 700, color: "#0F172A" }}>
+                          {item.title}
+                        </Typography>
+                        <Typography sx={{ fontSize: 13, color: "#64748B" }}>
+                          {item.time}
+                        </Typography>
+                      </Box>
+                      <Chip
+                        label={item.status}
+                        size="small"
+                        sx={{
+                          bgcolor:
+                            item.status === "Completed"
+                              ? "rgba(16,185,129,0.15)"
+                              : "rgba(2,132,199,0.12)",
+                          color:
+                            item.status === "Completed" ? "#047857" : "#0C4A6E",
+                          fontWeight: 700,
+                        }}
+                      />
+                    </Stack>
+                    {index < 2 ? <Divider sx={{ mt: 1.2 }} /> : null}
+                  </Box>
+                ))}
+              </Stack>
+            </Card>
+
+            <Stack direction="row" spacing={1.2}>
+              <Card
+                sx={{
+                  flex: 1,
+                  p: 1.5,
                   borderRadius: "14px",
-                  bgcolor: "rgba(255,255,255,0.95)",
-                  border: "1px solid rgba(15, 23, 42, 0.06)",
+                  border: "1px solid rgba(2,132,199,0.18)",
+                  bgcolor: "rgba(14,165,233,0.08)",
+                  boxShadow: "none",
                 }}
               >
-                <Stack direction="row" spacing={1.2} alignItems="center">
-                  <Box
-                    sx={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: "10px",
-                      display: "grid",
-                      placeItems: "center",
-                      bgcolor: `${item.color}1A`,
-                      color: item.color,
-                    }}
-                  >
-                    {item.icon}
-                  </Box>
-                  <Box>
-                    <Typography sx={{ fontWeight: 700, color: "#0f172a" }}>
-                      {item.title}
-                    </Typography>
-                    <Typography sx={{ fontSize: 13, color: "#64748b" }}>
-                      {item.time}
-                    </Typography>
-                  </Box>
-                </Stack>
-                <Chip
-                  label="Planned"
-                  size="small"
-                  sx={{
-                    bgcolor: "rgba(79,70,229,0.1)",
-                    color: "#4338CA",
-                    fontWeight: 700,
-                  }}
-                />
-              </MotionBox>
-            ))}
+                <Typography
+                  sx={{ fontSize: 12, color: "#0C4A6E", fontWeight: 700 }}
+                >
+                  Completion
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: 900, color: "#0F172A", fontSize: 22 }}
+                >
+                  72%
+                </Typography>
+              </Card>
+              <Card
+                sx={{
+                  flex: 1,
+                  p: 1.5,
+                  borderRadius: "14px",
+                  border: "1px solid rgba(16,185,129,0.18)",
+                  bgcolor: "rgba(16,185,129,0.08)",
+                  boxShadow: "none",
+                }}
+              >
+                <Typography
+                  sx={{ fontSize: 12, color: "#065F46", fontWeight: 700 }}
+                >
+                  Hours left
+                </Typography>
+                <Typography
+                  sx={{ fontWeight: 900, color: "#0F172A", fontSize: 22 }}
+                >
+                  18h
+                </Typography>
+              </Card>
+            </Stack>
           </Stack>
         </MotionCard>
       </Grid>

@@ -21,6 +21,7 @@ import {
   Logout as LogoutIcon,
   Person as PersonIcon,
   Settings as SettingsIcon,
+  HomeRounded as HomeRoundedIcon,
 } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
@@ -272,6 +273,21 @@ export default function Topbar() {
           </ListItemIcon>
           <Typography variant="body2">Settings</Typography>
         </MenuItem>
+        <MenuItem
+          href="/"
+          component="a"
+          onClick={handleUserMenuClose}
+          sx={{
+            "&:hover": {
+              backgroundColor: `${theme.colors.primary.main}08`,
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: "inherit" }}>
+            <HomeRoundedIcon fontSize="small" />
+          </ListItemIcon>
+          <Typography variant="body2">Landing Page</Typography>
+        </MenuItem>
         <Divider />
         <MenuItem
           onClick={() => {
@@ -323,6 +339,42 @@ export default function Topbar() {
           <Divider sx={{ my: 2 }} />
 
           <List sx={{ p: 0 }}>{renderListItems(secondaryListItems)}</List>
+
+          <List sx={{ p: 0, mt: 1 }}>
+            <ListItemButton
+              href="/"
+              component="a"
+              onClick={() => setMobileDrawerOpen(false)}
+              sx={{
+                my: 0.75,
+                px: 2.25,
+                py: 1.35,
+                borderRadius: theme.borderRadius.md,
+                color: theme.colors.neutral[600],
+                "&:hover": {
+                  backgroundColor: `${theme.colors.primary.main}08`,
+                  color: theme.colors.primary.main,
+                },
+                "& .MuiListItemIcon-root": {
+                  minWidth: 36,
+                  color: "inherit",
+                },
+              }}
+            >
+              <ListItemIcon>
+                <HomeRoundedIcon fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary="Landing Page"
+                primaryTypographyProps={{
+                  sx: {
+                    fontSize: "13px",
+                    fontWeight: 500,
+                  },
+                }}
+              />
+            </ListItemButton>
+          </List>
         </Box>
       </Drawer>
 

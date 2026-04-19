@@ -23,10 +23,21 @@ export default function CTASection({ onRegister }) {
             borderRadius: "28px",
             textAlign: "center",
             background:
-              "linear-gradient(120deg, #4F46E5 0%, #06B6D4 45%, #DB2777 100%)",
-            boxShadow: "0 20px 42px rgba(79,70,229,0.35)",
+              "linear-gradient(120deg, #0369A1 0%, #0F766E 46%, #B45309 100%)",
+            boxShadow: "0 22px 44px rgba(3,105,161,0.35)",
           }}
         >
+          <Typography
+            sx={{
+              color: "rgba(255,255,255,0.82)",
+              fontWeight: 700,
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              fontSize: 12,
+            }}
+          >
+            Ready to launch?
+          </Typography>
           <Typography
             variant="h3"
             sx={{
@@ -36,7 +47,7 @@ export default function CTASection({ onRegister }) {
               fontSize: { xs: "2rem", md: "2.7rem" },
             }}
           >
-            Start Your Smart Study Journey Today
+            Plan your next exam season with confidence
           </Typography>
           <Typography
             sx={{
@@ -46,8 +57,8 @@ export default function CTASection({ onRegister }) {
               mx: "auto",
             }}
           >
-            Create your account in minutes and let AI design a study roadmap
-            that matches your time, goals, and pace.
+            Create your account and generate your first adaptive study plan in
+            less than five minutes.
           </Typography>
           <Stack direction="row" justifyContent="center" sx={{ mt: 3 }}>
             <Button

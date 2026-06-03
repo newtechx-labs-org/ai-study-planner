@@ -207,6 +207,32 @@ export default function Settings() {
         </Stack>
       </GradientCard>
 
+      <Card
+        sx={{
+          borderRadius: theme.borderRadius.card,
+          border: `1px solid ${theme.colors.neutral[200]}`,
+          p: { xs: 3, md: 4 },
+          backgroundColor: "#FFFFFF",
+          boxShadow: theme.shadows.sm,
+        }}
+      >
+        <Stack spacing={2}>
+          <Typography variant="h6" sx={{ fontWeight: 800 }}>
+            Reminders
+          </Typography>
+          <Typography variant="body2" sx={{ color: theme.colors.neutral[700] }}>
+            Configure study reminders and alarm timings.
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+            <a href="/settings/reminder">
+              <CustomButton variant="primary" size="medium">
+                Set Reminder
+              </CustomButton>
+            </a>
+          </Box>
+        </Stack>
+      </Card>
+
       <Grid container spacing={3} alignItems="stretch">
         <Grid size={{ xs: 12, md: 4 }}>
           <Card

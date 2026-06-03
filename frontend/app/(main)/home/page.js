@@ -34,12 +34,36 @@ import SubjectForm from "@/app/components/SubjectForm";
 import { createSubject, getSubjects } from "@/services/subjectService";
 import { generatePlan, getPlanDetails, getPlans } from "@/services/planService";
 import { getProgress } from "@/services/progressService";
+import { getNextReminder } from "@/services/reminderService";
 import theme from "@/app/theme/authenticatedTheme";
 
 function in30DaysIso() {
   const date = new Date();
   date.setDate(date.getDate() + 30);
   return date.toISOString();
+}
+
+function pad2(n) {
+  return String(n).padStart(2, "0");
+}
+
+function formatFullDatetime(d) {
+  if (!d) return "";
+  const hours = d.getHours();
+  const ampm = hours >= 12 ? "PM" : "AM";
+  const h12 = hours % 12 === 0 ? 12 : hours % 12;
+  return `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}, ${pad2(
+    h12,
+  )}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())} ${ampm}`;
+}
+
+function formatFriendlyTime(d) {
+  if (!d) return "";
+  return d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 export default function Home() {
@@ -51,6 +75,9 @@ export default function Home() {
   const [currentPlan, setCurrentPlan] = useState(null);
   const [progress, setProgress] = useState(null);
   const [error, setError] = useState("");
+  const [nextReminder, setNextReminder] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+
   const [openSubjectDialog, setOpenSubjectDialog] = useState(false);
 
   const loadDashboardData = async () => {
@@ -83,7 +110,118 @@ export default function Home() {
 
   useEffect(() => {
     loadDashboardData();
+    fetchNextReminder();
   }, []);
+
+  const fetchNextReminder = async () => {
+    try {
+      const res = await getNextReminder();
+      if (res && res.reminder) {
+        const computeNextLocal = (rem) => {
+          if (!rem) return null;
+          const now = new Date();
+          const type = rem.type;
+          const data = rem.data || {};
+          if (type === "daily") {
+            const times = data.times || [];
+            const candidates = times
+              .map((t) => {
+                const [hh, mm] = (t || "").split(":");
+                if (hh == null) return null;
+                const c = new Date(now);
+                c.setHours(parseInt(hh, 10) || 0, parseInt(mm, 10) || 0, 0, 0);
+                if (c <= now) c.setDate(c.getDate() + 1);
+                return c;
+              })
+              .filter(Boolean);
+            if (!candidates.length) return null;
+            return candidates.reduce((a, b) => (a < b ? a : b));
+          }
+
+          if (type === "one_day") {
+            const at = data.at;
+            if (!at) return null;
+            const d = new Date(at);
+            return d > now ? d : null;
+          }
+
+          if (type === "weekdays") {
+            const days = data.days || [];
+            const tstr = data.time;
+            if (!days || !tstr) return null;
+            const tt = tstr.split(":");
+            const hh = parseInt(tt[0], 10) || 0;
+            const mm = parseInt(tt[1], 10) || 0;
+            for (let offset = 0; offset < 14; offset++) {
+              const cand = new Date(now);
+              cand.setDate(now.getDate() + offset);
+              if (
+                days.includes(
+                  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][
+                    cand.getDay()
+                  ],
+                )
+              ) {
+                cand.setHours(hh, mm, 0, 0);
+                if (cand > now) return cand;
+              }
+            }
+            return null;
+          }
+
+          if (type === "custom") {
+            const slots = data.slots || [];
+            const future = slots
+              .map((s) => new Date(s))
+              .filter((d) => d instanceof Date && !isNaN(d) && d > new Date());
+            if (!future.length) return null;
+            return future.reduce((a, b) => (a < b ? a : b));
+          }
+
+          return null;
+        };
+
+        const dtLocal = computeNextLocal(res.reminder);
+        const dt = dtLocal
+          ? dtLocal
+          : res.next_run
+            ? new Date(res.next_run)
+            : null;
+        if (dt) {
+          setNextReminder({ ...res, next_run: dt });
+          const secs = Math.max(
+            0,
+            Math.floor((dt.getTime() - Date.now()) / 1000),
+          );
+          setCountdown(secs);
+        } else {
+          setNextReminder(null);
+          setCountdown(null);
+        }
+      } else {
+        setNextReminder(null);
+        setCountdown(null);
+      }
+    } catch (e) {
+      setNextReminder(null);
+      setCountdown(null);
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchNextReminder();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (countdown == null) return;
+    const id = setInterval(() => {
+      setCountdown((c) => (c == null ? c : Math.max(0, c - 1)));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [countdown]);
 
   const handleCreateSubject = async (payload) => {
     try {
@@ -364,7 +502,34 @@ export default function Home() {
                 </Typography>
 
                 <Divider sx={{ borderColor: "rgba(255, 255, 255, 0.16)" }} />
-
+                <Box>
+                  {nextReminder && nextReminder.next_run ? (
+                    <Stack spacing={0.5}>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "rgba(255,255,255,0.78)" }}
+                      >
+                        Next alarm: {formatFullDatetime(nextReminder.next_run)}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{ color: "rgba(255,255,255,0.78)" }}
+                      >
+                        {countdown != null
+                          ? `${Math.floor(countdown / 3600)}h ${Math.floor(
+                              (countdown % 3600) / 60,
+                            )}m ${countdown % 60}s`
+                          : "—"}
+                      </Typography>
+                    </Stack>
+                  ) : (
+                    <a href="/settings/reminder" style={{ color: "#fff" }}>
+                      <Typography variant="body2">
+                        No reminder set — set one now
+                      </Typography>
+                    </a>
+                  )}
+                </Box>
                 <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                   <Chip
                     label={`${totalHours} hrs total`}

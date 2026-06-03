@@ -5,6 +5,7 @@ from models.study_plan import StudyPlan
 from models.study_session import StudySession
 from models.subject import DifficultyLevel, Subject
 from models.user import User
+from models.reminder import Reminder, ReminderType
 
 __all__ = [
     "Availability",
@@ -14,4 +15,6 @@ __all__ = [
     "StudySession",
     "Subject",
     "User",
+    "Reminder",
+    "ReminderType",
 ]

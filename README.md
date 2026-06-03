@@ -57,3 +57,9 @@ This should load swagger api's
 
 This should load signin page
 `http://localhost:3000`
+
+### Remove all the alarms
+
+Object.keys(localStorage).forEach(k => {
+if (k.startsWith('alarmDismissed:')) localStorage.removeItem(k)
+})

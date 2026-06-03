@@ -4,6 +4,7 @@ import AutoGraphRoundedIcon from "@mui/icons-material/AutoGraphRounded";
 import InsightsRoundedIcon from "@mui/icons-material/InsightsRounded";
 import ScheduleRoundedIcon from "@mui/icons-material/ScheduleRounded";
 import SettingsRoundedIcon from "@mui/icons-material/SettingsRounded";
+import AccessAlarmRoundedIcon from "@mui/icons-material/AccessAlarmRounded";
 
 // Main item list
 export const mainListItems = [
@@ -37,6 +38,11 @@ export const secondaryListItems = [
     text: "Study Availability",
     icon: <ScheduleRoundedIcon />,
     path: "/availability",
+  },
+  {
+    text: "Reminders",
+    icon: <AccessAlarmRoundedIcon />,
+    path: "/settings/reminder",
   },
   {
     text: "Settings",

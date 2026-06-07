@@ -37,6 +37,23 @@ const types = [
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+function notifyReminderSaved(message) {
+  if (typeof window === "undefined" || !("Notification" in window)) {
+    return;
+  }
+
+  if (Notification.permission === "granted") {
+    try {
+      new Notification("Reminder Saved", {
+        body: message,
+        tag: "reminder-saved",
+      });
+    } catch (e) {
+      // ignore notification errors
+    }
+  }
+}
+
 export default function ReminderSettings() {
   const [type, setType] = useState("daily");
   const [payload, setPayload] = useState({});
@@ -159,6 +176,7 @@ export default function ReminderSettings() {
       await setReminder(body);
       setPayload(newPayload);
       setSuccess("Reminder saved");
+      notifyReminderSaved("Your study reminder is active.");
     } catch (e) {
       setError(e.response?.data?.detail || "Failed to save reminder");
     }

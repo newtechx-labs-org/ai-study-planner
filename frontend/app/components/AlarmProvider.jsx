@@ -3,8 +3,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
+  Box,
   Dialog,
-  DialogTitle,
   DialogContent,
   DialogActions,
   Button,
@@ -25,6 +25,40 @@ function formatFullDatetime(d) {
     });
   } catch (e) {
     return String(d);
+  }
+}
+
+function getDismissKey(reminder) {
+  if (!reminder?.reminder_id) return null;
+  const runAt = reminder?.next_run
+    ? new Date(reminder.next_run).toISOString()
+    : "no-run";
+  return `alarmDismissed:${reminder.reminder_id}:${runAt}`;
+}
+
+function showBrowserNotification({ title, body, tag }) {
+  if (typeof window === "undefined" || !("Notification" in window)) {
+    return;
+  }
+
+  if (Notification.permission !== "granted") {
+    return;
+  }
+
+  try {
+    const notification = new Notification(title, {
+      body,
+      tag,
+      renotify: true,
+      icon: "/favicon.ico",
+    });
+
+    notification.onclick = () => {
+      window.focus();
+      notification.close();
+    };
+  } catch (e) {
+    // ignore notification errors
   }
 }
 
@@ -124,12 +158,40 @@ export default function AlarmProvider({ children }) {
   const [open, setOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
   const [countdown, setCountdown] = useState(null);
+  const [supportsNotification, setSupportsNotification] = useState(false);
+  const [notificationPermission, setNotificationPermission] =
+    useState("default");
   const stopperRef = useRef(null);
   const playedForRef = useRef(null);
+  const notifiedForRef = useRef(null);
+  const alertedForRef = useRef(null);
+  const workerRef = useRef(null);
   const STALE_THRESHOLD = 60; // seconds after scheduled time to consider stale
-  const prevCountdownRef = useRef(null);
-  const ignoreInitialDueRef = useRef(false);
   const isAuthRoute = pathname === "/signin" || pathname === "/signup";
+
+  const syncNotificationPermission = () => {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      setSupportsNotification(false);
+      setNotificationPermission("default");
+      return;
+    }
+
+    setSupportsNotification(true);
+    setNotificationPermission(Notification.permission);
+  };
+
+  const requestNotificationPermission = async () => {
+    if (typeof window === "undefined" || !("Notification" in window)) {
+      return;
+    }
+
+    try {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+    } catch (e) {
+      syncNotificationPermission();
+    }
+  };
 
   const fetchNext = async () => {
     try {
@@ -211,24 +273,27 @@ export default function AlarmProvider({ children }) {
         };
 
         const nextLocal = computeNextLocal(res.reminder);
-        const dt = nextLocal
-          ? nextLocal
-          : res.next_run
-            ? new Date(res.next_run)
-            : null;
+        const dt = nextLocal;
         // if reminder time is too far in the past, treat it as stale and ignore
         const secs = dt ? Math.floor((dt.getTime() - Date.now()) / 1000) : null;
         if (secs < -STALE_THRESHOLD) {
           setReminder(null);
           setCountdown(null);
           setSubjectName("");
+          workerRef.current?.postMessage({ type: "STOP" });
           return;
         }
 
-        ignoreInitialDueRef.current = secs != null && secs <= 0;
-
         setReminder({ ...res, next_run: dt });
         setCountdown(secs != null ? Math.max(0, secs) : null);
+        if (dt) {
+          workerRef.current?.postMessage({
+            type: "START",
+            targetTs: dt.getTime(),
+          });
+        } else {
+          workerRef.current?.postMessage({ type: "STOP" });
+        }
         // try to resolve subject name if provided in reminder data
         const subjId = res.reminder?.data?.subject_id || res.subject_id;
         if (subjId) {
@@ -244,25 +309,67 @@ export default function AlarmProvider({ children }) {
         setReminder(null);
         setCountdown(null);
         setSubjectName("");
+        workerRef.current?.postMessage({ type: "STOP" });
       }
     } catch (e) {
       setReminder(null);
       setCountdown(null);
+      workerRef.current?.postMessage({ type: "STOP" });
     }
   };
 
   useEffect(() => {
     if (isAuthRoute) {
+      workerRef.current?.postMessage({ type: "STOP" });
+      setCountdown(null);
+      setReminder(null);
       return;
+    }
+
+    syncNotificationPermission();
+
+    const maybeRequestPermission = () => {
+      if (typeof window === "undefined" || !("Notification" in window)) {
+        return;
+      }
+      if (Notification.permission === "default") {
+        Notification.requestPermission().catch(() => {});
+      }
+      setNotificationPermission(Notification.permission);
+      window.removeEventListener("click", maybeRequestPermission);
+      window.removeEventListener("keydown", maybeRequestPermission);
+    };
+
+    if (typeof window !== "undefined" && "Notification" in window) {
+      window.addEventListener("click", maybeRequestPermission);
+      window.addEventListener("keydown", maybeRequestPermission);
+    }
+
+    if (typeof window !== "undefined" && "Worker" in window) {
+      const worker = new Worker("/alarm-timer-worker.js");
+      worker.onmessage = (event) => {
+        const payload = event.data;
+        if (payload?.type === "TICK") {
+          setCountdown(payload.secondsLeft);
+        }
+      };
+      workerRef.current = worker;
     }
 
     fetchNext();
     const iv = setInterval(fetchNext, 30000);
-    return () => clearInterval(iv);
+    return () => {
+      clearInterval(iv);
+      window.removeEventListener("click", maybeRequestPermission);
+      window.removeEventListener("keydown", maybeRequestPermission);
+      workerRef.current?.postMessage({ type: "STOP" });
+      workerRef.current?.terminate();
+      workerRef.current = null;
+    };
   }, [isAuthRoute]);
 
   useEffect(() => {
-    if (countdown == null) return;
+    if (workerRef.current || countdown == null) return;
     const id = setInterval(() => {
       setCountdown((c) => (c == null ? c : Math.max(0, c - 1)));
     }, 1000);
@@ -271,32 +378,45 @@ export default function AlarmProvider({ children }) {
 
   useEffect(() => {
     if (!reminder || countdown == null) {
-      prevCountdownRef.current = countdown;
       return;
     }
 
+    const occurrenceKey = getDismissKey(reminder);
     const dismissed =
       typeof window !== "undefined" &&
-      localStorage.getItem(`alarmDismissed:${reminder.reminder_id}`);
-
-    const prev = prevCountdownRef.current;
-
-    // only trigger when countdown transitions from >0 to <=0
-    const justElapsed = prev != null && prev > 0 && countdown <= 0;
+      occurrenceKey &&
+      localStorage.getItem(occurrenceKey);
 
     if (
-      justElapsed &&
+      countdown <= 0 &&
       !dismissed &&
-      playedForRef.current !== reminder.reminder_id &&
-      !ignoreInitialDueRef.current
+      playedForRef.current !== occurrenceKey
     ) {
       setOpen(true);
       stopperRef.current = playMelodicAlarm();
-      playedForRef.current = reminder.reminder_id;
-    }
+      playedForRef.current = occurrenceKey;
 
-    prevCountdownRef.current = countdown;
-  }, [countdown, reminder]);
+      if (notifiedForRef.current !== occurrenceKey) {
+        syncNotificationPermission();
+        showBrowserNotification({
+          title: subjectName || "Study Reminder",
+          body: "It is time to start your study session.",
+          tag: occurrenceKey,
+        });
+        notifiedForRef.current = occurrenceKey;
+      }
+
+      if (
+        notificationPermission !== "granted" &&
+        alertedForRef.current !== occurrenceKey
+      ) {
+        alertedForRef.current = occurrenceKey;
+        window.alert(
+          `${subjectName || "Study Reminder"}: it is time to start your study session.`,
+        );
+      }
+    }
+  }, [countdown, reminder, subjectName, notificationPermission]);
 
   // listen for manual test events so users can verify alarm across pages
   useEffect(() => {
@@ -328,8 +448,9 @@ export default function AlarmProvider({ children }) {
     setOpen(false);
     // persist dismissal so this reminder won't re-open
     try {
-      if (reminder && reminder.reminder_id && typeof window !== "undefined") {
-        localStorage.setItem(`alarmDismissed:${reminder.reminder_id}`, "1");
+      const dismissKey = getDismissKey(reminder);
+      if (dismissKey && typeof window !== "undefined") {
+        localStorage.setItem(dismissKey, "1");
       }
     } catch (e) {}
 
@@ -344,6 +465,40 @@ export default function AlarmProvider({ children }) {
   return (
     <>
       {children}
+
+      {!isAuthRoute &&
+      supportsNotification &&
+      notificationPermission !== "granted" ? (
+        <Box
+          sx={{
+            position: "fixed",
+            right: 16,
+            bottom: 16,
+            zIndex: 1400,
+            maxWidth: 320,
+            borderRadius: 2,
+            p: 1.5,
+            bgcolor: "#111827",
+            color: "#F9FAFB",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+          }}
+        >
+          <Typography sx={{ fontSize: 13, fontWeight: 700, mb: 0.5 }}>
+            Enable Study Notifications
+          </Typography>
+          <Typography sx={{ fontSize: 12, opacity: 0.9, mb: 1 }}>
+            Allow browser notifications to get reminder alerts on time.
+          </Typography>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={requestNotificationPermission}
+            sx={{ textTransform: "none", fontWeight: 700 }}
+          >
+            Enable Notifications
+          </Button>
+        </Box>
+      ) : null}
 
       <Dialog
         open={open}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import {
   Dialog,
   DialogTitle,
@@ -118,6 +119,7 @@ function playMelodicAlarm(stopSignalRef) {
 }
 
 export default function AlarmProvider({ children }) {
+  const pathname = usePathname();
   const [reminder, setReminder] = useState(null);
   const [open, setOpen] = useState(false);
   const [subjectName, setSubjectName] = useState("");
@@ -127,6 +129,7 @@ export default function AlarmProvider({ children }) {
   const STALE_THRESHOLD = 60; // seconds after scheduled time to consider stale
   const prevCountdownRef = useRef(null);
   const ignoreInitialDueRef = useRef(false);
+  const isAuthRoute = pathname === "/signin" || pathname === "/signup";
 
   const fetchNext = async () => {
     try {
@@ -249,10 +252,14 @@ export default function AlarmProvider({ children }) {
   };
 
   useEffect(() => {
+    if (isAuthRoute) {
+      return;
+    }
+
     fetchNext();
     const iv = setInterval(fetchNext, 30000);
     return () => clearInterval(iv);
-  }, []);
+  }, [isAuthRoute]);
 
   useEffect(() => {
     if (countdown == null) return;

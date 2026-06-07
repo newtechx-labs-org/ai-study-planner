@@ -32,21 +32,24 @@ api.interceptors.response.use(
           {},
           {
             withCredentials: true,
-          }
+          },
         );
         // Store new access_token in Redux
         const newAccessToken = refreshResponse.data.access_token;
         store.dispatch(
-          setCredentials({ user: {}, access_token: newAccessToken })
+          setCredentials({ user: {}, access_token: newAccessToken }),
         );
         return api(originalRequest);
       } catch (refreshError) {
         store.dispatch(logout());
-        window.location.href = "/signin";
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/signin" && currentPath !== "/signup") {
+          window.location.href = "/signin";
+        }
       }
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 export default api;

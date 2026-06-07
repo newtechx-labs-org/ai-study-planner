@@ -21,7 +21,7 @@ import { Sora } from "next/font/google";
 
 import AuthLayout from "./AuthLayout";
 import InputField from "./InputField";
-import { signIn, signOut } from "@/services/userService";
+import { signIn } from "@/services/userService";
 import { mainListItems } from "@/app/(main)/utils/NavListItems";
 
 const sora = Sora({
@@ -38,10 +38,6 @@ export default function SignIn() {
   const [submitError, setSubmitError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    signOut();
-  }, []);
 
   const validate = () => {
     const nextErrors = {};
